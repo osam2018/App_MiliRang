@@ -9,9 +9,17 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_main"
+        android:id="@+id/report_view"
+        layout="@layout/app_bar_report"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <include
+        android:id="@+id/schedule_view"
+        layout="@layout/app_bar_schedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -20,6 +28,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer" >
+
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
