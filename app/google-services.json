@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "197385340292",
+    "firebase_url": "https://milirang-3c7e6.firebaseio.com",
+    "project_id": "milirang-3c7e6",
+    "storage_bucket": "milirang-3c7e6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197385340292:android:9d62ff9b9ad948b3",
+        "android_client_info": {
+          "package_name": "mil.army.milirang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "197385340292-qucmggi079ap95o5m1lgnhls29koliu9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPoP99vooROMv7Kc0pPfXbVjzXig6R22M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity
     private void openScheduleView() {
         findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
-
-
     }
 
     @Override
