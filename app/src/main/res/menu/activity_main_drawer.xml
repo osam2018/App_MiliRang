@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -7,7 +8,9 @@
         <menu>
             <item
                 android:id="@+id/nav_report_inbox"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_receive"
+                android:background="#ff0000"
+
                 android:title="수신함" />
             <item
                 android:id="@+id/nav_report_sent"
@@ -23,7 +26,7 @@
                 android:title="이벤트 뷰" />
             <item
                 android:id="@+id/nav_schedule_work"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_menu_calendar"
                 android:title="근무 일정" />
         </menu>
     </item>
@@ -31,7 +34,7 @@
         <menu>
             <item
                 android:id="@+id/nav_contact_list"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_phone"
                 android:title="부대원 연락처" />
         </menu>
     </item>
@@ -39,7 +42,7 @@
         <menu>
             <item
                 android:id="@+id/nav_etc_setting"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_settings"
                 android:title="설정" />
         </menu>
     </item>
