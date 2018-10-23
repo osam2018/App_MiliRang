@@ -2,9 +2,13 @@ package mil.army.milirang;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,17 +24,30 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import mil.army.milirang.report.ReportCreateActivity;
+import mil.army.milirang.report.ReportRecyclerViewAdapter;
+import mil.army.milirang.report.vo.ReportVO;
+import mil.army.milirang.user.vo.UserVO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int RC_SIGN_IN = 186;
+
+    private DatabaseReference mDatabase;
+    RecyclerView mReportRecyclerView;
+    ReportRecyclerViewAdapter mReportRecyclerViewAdapter;
+    List<ReportVO> mReportList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +63,13 @@ public class MainActivity extends AppCompatActivity
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build(),
-                300
+                RC_SIGN_IN
         );
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        ReportVO report = new ReportVO("title", "body", "20181023", new UserVO(), Arrays.asList(new UserVO()));
+        mDatabase.child("report").push().setValue(report);
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +88,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
                 Intent intent = new Intent(MainActivity.this, ReportCreateActivity.class);
                 MainActivity.this.startActivity(intent);
             }
@@ -90,6 +113,45 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mReportRecyclerView = findViewById(R.id.report_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mReportRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mReportList = new ArrayList<>();
+
+        mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
+        mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
+
+        loadReportList();
+    }
+
+    /**
+     * Loads Reports from "report" table from firebase database.
+     */
+    private void loadReportList() {
+        DatabaseReference reportRef = mDatabase.child("report");
+
+
+        reportRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                mReportList.clear();
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    ReportVO rpt = singleSnapshot.getValue(ReportVO.class);
+                    mReportList.add(rpt);
+                }
+
+                mReportRecyclerViewAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG", "ERROR!");
+            }
+        });
     }
 
     private void openReportView() {
@@ -110,6 +172,8 @@ public class MainActivity extends AppCompatActivity
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if(resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            } else {
+
             }
         }
     }
