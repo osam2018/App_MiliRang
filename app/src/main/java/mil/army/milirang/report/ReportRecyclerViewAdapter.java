@@ -48,7 +48,7 @@ public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecycl
 
     @Override
     public int getItemCount() {
-        return 0;
+        return report.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
