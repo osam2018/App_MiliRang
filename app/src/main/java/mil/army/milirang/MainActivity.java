@@ -48,14 +48,20 @@ public class MainActivity extends AppCompatActivity
 
         openReportView();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
+        setSupportActionBar(report_toolbar);
+        setSupportActionBar(schedule_toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
+                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle schedule_toggle = new ActionBarDrawerToggle(
+                this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(report_toggle);
+        drawer.addDrawerListener(schedule_toggle);
+        report_toggle.syncState();
+        schedule_toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -69,6 +75,8 @@ public class MainActivity extends AppCompatActivity
     private void openScheduleView() {
         findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
+
+
     }
 
     @Override
