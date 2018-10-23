@@ -7,4 +7,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="report_create_title">보고서 작성</string>
+    <string name="schesule_create_title">스케줄</string>
+
 </resources>
