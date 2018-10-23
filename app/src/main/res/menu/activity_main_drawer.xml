@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="보고서">
+        <menu>
+            <item
+                android:id="@+id/nav_report_inbox"
+                android:icon="@drawable/ic_menu_share"
+                android:title="수신함" />
+            <item
+                android:id="@+id/nav_report_sent"
+                android:icon="@drawable/ic_menu_send"
+                android:title="송신함" />
+        </menu>
+    </item>
+    <item android:title="일정">
+        <menu>
+            <item
+                android:id="@+id/nav_schedule_event"
+                android:icon="@drawable/ic_menu_share"
+                android:title="이벤트 뷰" />
+            <item
+                android:id="@+id/nav_schedule_work"
+                android:icon="@drawable/ic_menu_send"
+                android:title="근무 일정" />
+        </menu>
+    </item>
+    <item android:title="연락처">
+        <menu>
+            <item
+                android:id="@+id/nav_contact_list"
+                android:icon="@drawable/ic_menu_share"
+                android:title="부대원 연락처" />
+        </menu>
+    </item>
+    <item android:title="기타">
+        <menu>
+            <item
+                android:id="@+id/nav_etc_setting"
+                android:icon="@drawable/ic_menu_share"
+                android:title="설정" />
+        </menu>
+    </item>
+
+</menu>
