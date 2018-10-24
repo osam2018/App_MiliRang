@@ -12,6 +12,9 @@ public class UserVO implements Serializable {
 
     public UserVO() {}
 
+    public String toString() {
+        return this.getDisplayName();
+    }
 
     public String getEmail() {
         return email;

@@ -177,10 +177,6 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
     }
-    private void openContactView() {
-        findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
-        findViewById(R.id.contact_view).setVisibility(View.VISIBLE);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -244,7 +240,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);
         }  else if (id == R.id.nav_contact_list) {
-            openContactView();
+            openScheduleView();
     }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
