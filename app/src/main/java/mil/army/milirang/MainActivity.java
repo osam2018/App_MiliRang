@@ -42,6 +42,7 @@ import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
+import mil.army.milirang.user.ContactRecyclerViewAdapter;
 import mil.army.milirang.user.vo.UserVO;
 
 public class MainActivity extends AppCompatActivity
@@ -54,8 +55,13 @@ public class MainActivity extends AppCompatActivity
     ReportRecyclerViewAdapter mReportRecyclerViewAdapter;
     List<ReportVO> mReportList;
 
+    RecyclerView mContactRecyclerView;
+    ContactRecyclerViewAdapter mContactRecyclerViewAdapter;
+    List<UserVO> mContactList;
+
     boolean reportViewPrepared = false;
     boolean scheduleViewPrepared = false;
+    boolean contactViewPrepared = false;
 
 
     @Override
@@ -159,7 +165,32 @@ public class MainActivity extends AppCompatActivity
         schedule_toggle.syncState();
         scheduleViewPrepared = true;
     }
+    private void prepareContactView() {
 
+        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        setSupportActionBar(report_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
+                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(report_toggle);
+        report_toggle.syncState();
+
+
+        mContactRecyclerView = findViewById(R.id.report_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mContactRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mContactList = new ArrayList<>();
+
+        mContactRecyclerViewAdapter = new ContactRecyclerViewAdapter(this, mContactList);
+        mContactRecyclerView.setAdapter(mContactRecyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContactRecyclerView.getContext(), linearLayoutManager.getOrientation());
+        mContactRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        contactViewPrepared = true;
+    }
     /**
      * Loads Reports from "report" table from firebase database.
      */
@@ -235,6 +266,11 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
     }
 
+    private void openContactView() {
+        findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.contact_view).setVisibility(View.VISIBLE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -306,6 +342,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);
+        } else if (id == R.id.nav_contact_list) {
+            this.setTitle("부대원 연락처");
+            if(!contactViewPrepared) prepareContactView();
+            openContactView();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
