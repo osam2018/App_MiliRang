@@ -1,5 +1,6 @@
 package mil.army.milirang.schedule;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import mil.army.milirang.schedule.vo.ScheduleVO;
 public class ScheduleActivity extends AppCompatActivity {
     TextView t;
     Button b;
+    Button b_list;
     CalendarPickerView calendar;
     ScheduleVO vo;
     DatabaseReference ref;
@@ -41,6 +43,7 @@ public class ScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule);
         t = (TextView) findViewById(R.id.test);
         b = (Button) findViewById(R.id.summit_button);
+        b_list = (Button) findViewById(R.id.to_mylist);
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
@@ -50,7 +53,7 @@ public class ScheduleActivity extends AppCompatActivity {
         String day1 = "2018-10-25";
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-        try {
+        try { //임시로 String을 Date로 바꾸는거 실험용
             Date date1 = format.parse(day1);
             info.add(date1);
         }catch (ParseException o)
@@ -93,12 +96,22 @@ public class ScheduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List daylist = calendar.getSelectedDates();
                 ref.child(f_user.getUid()).setValue(daylist); // 버튼을 누르면 선택한 날짜를 넘겨줌
+
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     Toast.makeText(ScheduleActivity.this, day, Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        b_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ScheduleActivity.this, ScheduleScrollingActivity.class);
+                ScheduleActivity.this.startActivity(intent);
+            }
+        });
+
 
         t.setText(String.valueOf(calendar.getSelectedDates().size()));
 //        CalendarCellDecorator deco = new CalendarCellDecorator();

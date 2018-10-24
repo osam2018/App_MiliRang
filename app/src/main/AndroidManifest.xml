@@ -15,19 +15,21 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".report.ReportCreateActivity"
-            android:parentActivityName=".MainActivity"
+            android:label="@string/report_create_title"
             android:launchMode="singleTop"
-            android:label="@string/report_create_title">
-        </activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".schedule.ScheduleActivity"
-            android:label="@string/report_create_title">
-        </activity>
+            android:label="@string/schedule_create_title" />
+
+        <activity android:name=".schedule.ScheduleScrollingActivity"
+            android:label="@string/schedule_create_title" />
     </application>
 
 </manifest>
