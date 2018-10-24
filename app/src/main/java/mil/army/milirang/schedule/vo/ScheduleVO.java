@@ -1,4 +1,6 @@
-package mil.army.milirang.report.vo;
+package mil.army.milirang.schedule.vo;
+
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
 import java.util.ArrayList;
