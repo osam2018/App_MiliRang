@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mil.army.milirang.R;
+import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.report.vo.ReportVO;
 import mil.army.milirang.user.vo.UserVO;
 
@@ -66,8 +67,9 @@ public class ReportDetailActivity extends AppCompatActivity {
                     }
                 });
 
-        mReceiverRecyclerView = findViewById(R.id.report_list);
+        mReceiverRecyclerView = findViewById(R.id.report_detail_receivers);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mReceiverRecyclerView.setLayoutManager(linearLayoutManager);
 
         mReceiverList = new ArrayList<>();
@@ -77,6 +79,38 @@ public class ReportDetailActivity extends AppCompatActivity {
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReceiverRecyclerView.getContext(), linearLayoutManager.getOrientation());
         mReceiverRecyclerView.addItemDecoration(dividerItemDecoration);
+
+
+        mDatabase.child("report_receiver")
+                .orderByChild("report_id")
+                .equalTo(report.getRpt_id())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mReceiverList.clear();
+                        mReceiverRecyclerViewAdapter.notifyDataSetChanged();
+                        for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            String uid = singleSnapshot.getValue(ReportReceiverVO.class).getReceiver_id();
+                            mDatabase.child("users")
+                                    .child(uid)
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            UserVO user = dataSnapshot.getValue(UserVO.class);
+                                            mReceiverList.add(user.getDisplayName());
+                                            mReceiverRecyclerViewAdapter.notifyDataSetChanged();
+                                        }
+                                        @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
 
 
     }

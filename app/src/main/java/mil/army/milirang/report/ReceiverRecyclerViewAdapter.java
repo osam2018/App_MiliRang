@@ -61,10 +61,6 @@ class ReceiverRecyclerViewAdapter extends RecyclerView.Adapter<ReceiverRecyclerV
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), ReportDetailActivity.class);
-                    int i = 0;
-                    intent.putExtra("report", receiver.get(getAdapterPosition()));
-                    view.getContext().startActivity(intent);
                 }
             });
         }

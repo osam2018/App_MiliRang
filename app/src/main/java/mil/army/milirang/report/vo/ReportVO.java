@@ -11,6 +11,7 @@ import mil.army.milirang.user.vo.UserVO;
 @IgnoreExtraProperties
 public class ReportVO implements Serializable {
 
+    private String rpt_id;
     private String rpt_title;
     private String rpt_body;
     private String rpt_timestamp;
@@ -72,5 +73,13 @@ public class ReportVO implements Serializable {
 
     public void setRpt_receiver(List<String> rpt_receiver) {
         this.rpt_receiver = rpt_receiver;
+    }
+
+    public String getRpt_id() {
+        return rpt_id;
+    }
+
+    public void setRpt_id(String rpt_id) {
+        this.rpt_id = rpt_id;
     }
 }

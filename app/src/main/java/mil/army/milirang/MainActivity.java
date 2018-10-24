@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     ReportVO r = dataSnapshot.getValue(ReportVO.class);
+                                    r.setRpt_id(dataSnapshot.getKey());
                                     mReportList.add(r);
                                     mReportRecyclerViewAdapter.notifyDataSetChanged();
                                 }
