@@ -1,5 +1,6 @@
 package mil.army.milirang.schedule;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,22 +10,31 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.*;
 import com.squareup.timessquare.CalendarCellDecorator;
 import com.squareup.timessquare.CalendarPickerView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import mil.army.milirang.R;
+import mil.army.milirang.schedule.vo.ScheduleVO;
 
 public class ScheduleActivity extends AppCompatActivity {
     TextView t;
     Button b;
     CalendarPickerView calendar;
+    ScheduleVO vo;
+    DatabaseReference ref;
+    FirebaseUser f_user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +42,8 @@ public class ScheduleActivity extends AppCompatActivity {
         t = (TextView) findViewById(R.id.test);
         b = (Button) findViewById(R.id.summit_button);
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
+        f_user = FirebaseAuth.getInstance().getCurrentUser();
+        ref = FirebaseDatabase.getInstance().getReference().child("schedules");
 
         ArrayList<Date> info = new ArrayList<Date>();
 
@@ -80,6 +92,7 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 List daylist = calendar.getSelectedDates();
+                ref.child(f_user.getUid()).setValue(daylist); // 버튼을 누르면 선택한 날짜를 넘겨줌
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     Toast.makeText(ScheduleActivity.this, day, Toast.LENGTH_SHORT).show();
