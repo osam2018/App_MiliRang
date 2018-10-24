@@ -3,22 +3,34 @@
     android:id="@+id/report_create_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/rpt_create_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="제목"
+        android:hint="보고서 제목"
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/editText5"
+        android:id="@+id/rpt_create_body"
         android:layout_width="match_parent"
-        android:layout_height="327dp"
+        android:layout_height="420dp"
         android:ems="10"
         android:hint="본문"
         android:inputType="textMultiLine"
         android:textAlignment="viewStart" />
+
+    <EditText
+        android:id="@+id/rpt_create_receiver"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="수신인"
+        android:inputType="textMultiLine"
+        android:textAlignment="viewStart" />
+
 </LinearLayout>

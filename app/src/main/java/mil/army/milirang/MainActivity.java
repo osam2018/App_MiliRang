@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -58,18 +59,28 @@ public class MainActivity extends AppCompatActivity
             new AuthUI.IdpConfig.EmailBuilder().build()
         );
 
-        startActivityForResult(
-                AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build(),
-                RC_SIGN_IN
-        );
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN
+            );
+        } else {
+            Snackbar.make(findViewById(R.id.report_view), FirebaseAuth.getInstance().getCurrentUser().getDisplayName() + "님, 환영합니다!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        ReportVO report = new ReportVO("title", "body", "20181023", new UserVO(), Arrays.asList(new UserVO()));
+        /*
+
+        ReportVO report = new ReportVO("title", "body", "20181023",
+                                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                                        Arrays.asList(FirebaseAuth.getInstance().getCurrentUser().getUid()));
         mDatabase.child("report").push().setValue(report);
+        */
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +133,9 @@ public class MainActivity extends AppCompatActivity
 
         mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
         mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
+        mReportRecyclerView.addItemDecoration(dividerItemDecoration);
 
         loadReportList();
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="45dp">
     <ImageView
         android:layout_height="30dp"
         android:layout_width="30dp"
@@ -17,8 +17,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:textSize="30dp"
-            android:paddingLeft="20dp"
+            android:paddingTop="3dp"
+            android:textSize="20dp"
+            android:paddingLeft="0dp"
             android:text="제목 Placeholder입니다." />
 
         <TextView
@@ -26,11 +27,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:paddingRight="10dp"
-            android:paddingTop="0dp"
-            android:paddingEnd="20dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
             android:text="2018-10-23 22:45:20"
-            android:textSize="15dp"
+            android:textSize="10dp"
             android:textColor="@android:color/darker_gray"
             />
     </LinearLayout>
