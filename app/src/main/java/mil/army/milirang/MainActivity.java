@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.schedule_view).setVisibility(View.INVISIBLE);
         findViewById(R.id.report_view).setVisibility(View.VISIBLE);
     }
-
     private void openScheduleView() {
         findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
