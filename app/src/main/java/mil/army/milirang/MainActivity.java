@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mil.army.milirang.report.ReportCreateActivity;
+import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
 import mil.army.milirang.user.vo.UserVO;
@@ -99,8 +100,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-                Intent intent = new Intent(MainActivity.this, ReportCreateActivity.class);
+                Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -234,6 +234,9 @@ public class MainActivity extends AppCompatActivity
             openReportView();
         } else if (id == R.id.nav_schedule_event) {
             openScheduleView();
+        } else if (id == R.id.nav_schedule_work) {
+            Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+            MainActivity.this.startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

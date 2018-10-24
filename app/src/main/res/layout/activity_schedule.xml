@@ -5,12 +5,12 @@
     android:id="@+id/sumit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScheduleActivity">
+    tools:context=".schedule.ScheduleActivity">
 
 
     <com.squareup.timessquare.CalendarPickerView
         android:id="@+id/calendar_view"
-        android:layout_width="365dp"
+        android:layout_width="323dp"
         android:layout_height="343dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
@@ -20,7 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tsquare_dayBackground="@color/calendar_highlighted_day_bg"
-        app:tsquare_dayTextColor="@android:color/black"
         app:tsquare_dividerColor="@android:color/background_dark"
         app:tsquare_headerTextColor="@android:color/black"
         app:tsquare_titleTextColor="@android:color/black" />
