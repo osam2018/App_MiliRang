@@ -2,15 +2,14 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="45dp"
+    android:layout_height="80dp"
     >
 
 
     <ImageView
-        android:layout_height="30dp"
-        android:layout_width="30dp"
-        android:src="@android:drawable/checkbox_on_background"
-        /> <!--android:src="@android:drawable/checkbox_off_background"-->
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@android:mipmap/sym_def_app_icon" /> <!--android:src="@android:drawable/checkbox_off_background"-->
 
 
 
@@ -20,26 +19,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
-            android:id="@+id/rpt_title"
+            android:id="@+id/cnt_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:paddingTop="3dp"
-            android:textSize="20dp"
-            android:paddingLeft="0dp"
-            android:text="제목 Placeholder입니다." />
+            android:textSize="25dp"
+            android:paddingLeft="10dp"
+            android:text="홍길동" />
 
         <TextView
-            android:id="@+id/rpt_timetsamp"
+            android:id="@+id/cnt_phoneNum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:paddingRight="5dp"
+            android:gravity="left"
+            android:paddingLeft="15dp"
             android:paddingEnd="5dp"
-            android:text="2018-10-23 22:45:20"
-            android:textSize="10dp"
+            android:text="010-0000-0000 / rok@army.mil"
+            android:textSize="20dp"
             android:textColor="@android:color/darker_gray"
             />
 

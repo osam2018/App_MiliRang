@@ -8,9 +8,13 @@ public class UserVO implements Serializable {
     private String displayName;
     private String uid;
     private String milname;
+    private String phoneNum;
 
     public UserVO() {}
 
+    public String toString() {
+        return this.getDisplayName();
+    }
 
     public String getEmail() {
         return email;
@@ -43,4 +47,13 @@ public class UserVO implements Serializable {
     public void setMilname(String milname) {
         this.milname = milname;
     }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
 }

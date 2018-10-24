@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.MultiAutoCompleteTextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +32,7 @@ import mil.army.milirang.user.vo.UserVO;
 public class ReportCreateActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
-    private List<String> mUserList;
+    private List<UserVO> mUserList;
 
     private String addZero(int i) {
         if(i < 10) return "0" + i;
@@ -52,11 +53,11 @@ public class ReportCreateActivity extends AppCompatActivity {
                 mUserList.clear();
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
                     UserVO user = singleSnapshot.getValue(UserVO.class);
-                    mUserList.add(user.getDisplayName());
+                    mUserList.add(user);
                 }
                 MultiAutoCompleteTextView auto = findViewById(R.id.rpt_create_receiver);
 
-                ArrayAdapter<String> users = new ArrayAdapter<String>(ReportCreateActivity.this, R.layout.report_item, (String[]) mUserList.toArray(new String[0]));
+                ArrayAdapter<UserVO> users = new ArrayAdapter<>(ReportCreateActivity.this, R.layout.autocomplete_tag, (UserVO[]) mUserList.toArray(new UserVO[0]));
                 auto.setAdapter(users);
                 auto.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
             }
@@ -83,10 +84,26 @@ public class ReportCreateActivity extends AppCompatActivity {
                                         addZero(c.get(Calendar.SECOND));
                 ReportVO rvo = new ReportVO(rpt_title, rpt_body, rpt_timestamp, uid, Arrays.asList(""));
 
-                mDatabase.child("report").push().setValue(rvo);
+                String newkey = mDatabase.child("report").push().getKey();
+                mDatabase.child("report").child(newkey).setValue(rvo);
 
                 DatabaseReference report_receiver = mDatabase.child("report_receiver");
 
+                MultiAutoCompleteTextView receiver_input = findViewById(R.id.rpt_create_receiver);
+                String[] rcv_names = receiver_input.getText().toString().split(",");
+
+                for(String rcv_name : rcv_names) {
+                    if(rcv_name.trim().length() == 0) continue;
+                    ReportReceiverVO rcvo = new ReportReceiverVO();
+                    for(UserVO user : mUserList) {
+                        if(user.getDisplayName().equals(rcv_name.trim())) {
+                            rcvo.setReceiver_id(user.getUid());
+                            rcvo.setReport_id(newkey);
+                            report_receiver.push().setValue(rcvo);
+                            break;
+                        }
+                    }
+                }
 
 
                 ReportCreateActivity.this.finish();
