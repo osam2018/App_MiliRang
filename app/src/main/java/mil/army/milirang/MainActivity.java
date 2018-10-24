@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mil.army.milirang.report.ReportCreateActivity;
+import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
@@ -142,10 +143,12 @@ public class MainActivity extends AppCompatActivity
      * Loads Reports from "report" table from firebase database.
      */
     private void loadReportList() {
-        Query reportRef = mDatabase.child("report")
-                                .orderByChild("rpt_timestamp")
-                                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid(), "rpt_receiver");
+        Query reportRef = mDatabase.child("report_receiver")
+                .orderByChild("receiver_id")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        mReportList.clear();
+        mReportRecyclerViewAdapter.notifyDataSetChanged();
 
         reportRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -153,11 +156,21 @@ public class MainActivity extends AppCompatActivity
 
                 mReportList.clear();
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    ReportVO rpt = singleSnapshot.getValue(ReportVO.class);
-                    mReportList.add(rpt);
-                }
+                    ReportReceiverVO rpt = singleSnapshot.getValue(ReportReceiverVO.class);
+                    mDatabase.child("report")
+                            .child(rpt.getReport_id())
+                            .addValueEventListener(new ValueEventListener() {
 
-                mReportRecyclerViewAdapter.notifyDataSetChanged();
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    ReportVO r = dataSnapshot.getValue(ReportVO.class);
+                                    mReportList.add(r);
+                                    mReportRecyclerViewAdapter.notifyDataSetChanged();
+                                }
+                                @Override  public void onCancelled(@NonNull DatabaseError databaseError) {}
+                            });
+
+                }
 
             }
 
@@ -166,6 +179,29 @@ public class MainActivity extends AppCompatActivity
                 Log.d("TAG", "ERROR!");
             }
         });
+    }
+
+    private void loadSentReportList() {
+        mReportList.clear();
+        mReportRecyclerViewAdapter.notifyDataSetChanged();
+
+        mDatabase.child("report")
+                .orderByChild("rpt_sender")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mReportList.clear();
+                        for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            ReportVO r = singleSnapshot.getValue(ReportVO.class);
+                            mReportList.add(r);
+                        }
+                        mReportRecyclerViewAdapter.notifyDataSetChanged();
+                    }
+                    @Override  public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
     }
 
     private void openReportView() {
@@ -233,8 +269,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_report_inbox) {
+            this.setTitle("보고서 수신함");
             openReportView();
+            loadReportList();
+        } else if (id == R.id.nav_report_sent) {
+            this.setTitle("보고서 송신함");
+            openReportView();
+            loadSentReportList();
         } else if (id == R.id.nav_schedule_event) {
+            this.setTitle("이벤트");
             openScheduleView();
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
