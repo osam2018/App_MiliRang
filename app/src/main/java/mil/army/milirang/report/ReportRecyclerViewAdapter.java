@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,8 @@ public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecycl
         // 데이터 결합
         viewHolder.title.setText(data.getRpt_title());
         viewHolder.timestamp.setText(data.getRpt_timestamp());
+        if(data.getRpt_read() != null && data.getRpt_read())  viewHolder.read.setVisibility(View.VISIBLE);
+        else                    viewHolder.read.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -55,11 +58,13 @@ public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecycl
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView timestamp;
+        ImageView read;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.rpt_title);
             timestamp = (TextView) itemView.findViewById(R.id.rpt_timetsamp);
+            read = (ImageView) itemView.findViewById(R.id.rpt_read);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

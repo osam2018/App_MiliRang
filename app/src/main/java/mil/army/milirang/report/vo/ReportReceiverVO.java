@@ -8,6 +8,7 @@ public class ReportReceiverVO implements Serializable {
 
     private String report_id;
     private String receiver_id;
+    private Boolean received;
 
     public String getReport_id() {
         return report_id;
@@ -23,5 +24,13 @@ public class ReportReceiverVO implements Serializable {
 
     public void setReceiver_id(String receiver_id) {
         this.receiver_id = receiver_id;
+    }
+
+    public Boolean getReceived() {
+        return received;
+    }
+
+    public void setReceived(Boolean received) {
+        this.received = received;
     }
 }

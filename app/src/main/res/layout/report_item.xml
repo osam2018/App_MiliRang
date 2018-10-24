@@ -7,6 +7,7 @@
 
 
     <ImageView
+        android:id="@+id/rpt_read"
         android:layout_height="30dp"
         android:layout_width="30dp"
         android:src="@android:drawable/checkbox_on_background"

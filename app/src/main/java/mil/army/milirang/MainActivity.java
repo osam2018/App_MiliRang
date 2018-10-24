@@ -176,7 +176,8 @@ public class MainActivity extends AppCompatActivity
 
                 mReportList.clear();
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    ReportReceiverVO rpt = singleSnapshot.getValue(ReportReceiverVO.class);
+                    final ReportReceiverVO rpt = singleSnapshot.getValue(ReportReceiverVO.class);
+
                     mDatabase.child("report")
                             .child(rpt.getReport_id())
                             .addValueEventListener(new ValueEventListener() {
@@ -185,6 +186,7 @@ public class MainActivity extends AppCompatActivity
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     ReportVO r = dataSnapshot.getValue(ReportVO.class);
                                     r.setRpt_id(dataSnapshot.getKey());
+                                    r.setRpt_read(rpt.getReceived());
                                     mReportList.add(r);
                                     mReportRecyclerViewAdapter.notifyDataSetChanged();
                                 }

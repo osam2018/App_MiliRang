@@ -17,6 +17,7 @@ public class ReportVO implements Serializable {
     private String rpt_timestamp;
     private String rpt_sender;
     private List<String> rpt_receiver;
+    private Boolean rpt_read;
 
     public ReportVO() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -81,5 +82,13 @@ public class ReportVO implements Serializable {
 
     public void setRpt_id(String rpt_id) {
         this.rpt_id = rpt_id;
+    }
+
+    public Boolean getRpt_read() {
+        return rpt_read;
+    }
+
+    public void setRpt_read(Boolean rpt_read) {
+        this.rpt_read = rpt_read;
     }
 }
