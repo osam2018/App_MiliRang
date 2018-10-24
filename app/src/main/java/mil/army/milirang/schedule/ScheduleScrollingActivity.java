@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -43,8 +44,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         recyclerview = (RecyclerView) findViewById(R.id.schedule_list);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         list = new ArrayList<String>();
-        loadScheduleList();
-        Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
+        // Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
 
         recyclerview.setHasFixedSize(true);
 
@@ -53,6 +53,8 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
 
         adapter = new ScheduleRecyclerViewAdapter(this, list);
         recyclerview.setAdapter(adapter);
+
+        loadScheduleList();
     }
 
 
@@ -60,7 +62,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
      * Loads Reports from "schedule" table from firebase database.
      */
     private void loadScheduleList() {
-        DatabaseReference schedules = ref.child(f_user.getUid());
+        Query schedules = ref.orderByKey().equalTo(f_user.getUid());
 
         schedules.addValueEventListener(new ValueEventListener() {
             @Override
@@ -68,9 +70,11 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
                 list.clear();
                 int i = 0;
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    HashMap<String, String> temp = (HashMap<String, String>) singleSnapshot.getValue();
-                    String day = temp.get(String.valueOf(i));
-                    list.add(day);
+                    List<HashMap<String, String>> temp = (List<HashMap<String, String>>) singleSnapshot.getValue();
+                    for(HashMap<String, String> item : temp) {
+                        String day = item.get("date");
+                        list.add(day);
+                    }
                     i++;
                 }
                 adapter.notifyDataSetChanged();
