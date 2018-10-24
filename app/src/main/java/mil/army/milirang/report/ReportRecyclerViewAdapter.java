@@ -64,6 +64,8 @@ public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecycl
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ReportDetailActivity.class);
+                    int i = 0;
+                    intent.putExtra("report", report.get(getAdapterPosition()));
                     view.getContext().startActivity(intent);
                 }
             });

@@ -32,6 +32,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutmanager;
     ScheduleRecyclerViewAdapter adapter;
     List<String> list;
+    List<String> arr;
     DatabaseReference ref;
     FirebaseUser f_user;
 
@@ -44,6 +45,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         recyclerview = (RecyclerView) findViewById(R.id.schedule_list);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         list = new ArrayList<String>();
+        arr = new ArrayList<String>();
         // Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
 
         recyclerview.setHasFixedSize(true);
@@ -51,10 +53,11 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         layoutmanager = new LinearLayoutManager(this);
         recyclerview.setLayoutManager(layoutmanager);
 
-        adapter = new ScheduleRecyclerViewAdapter(this, list);
+        adapter = new ScheduleRecyclerViewAdapter(this, list, arr);
         recyclerview.setAdapter(adapter);
 
         loadScheduleList();
+        loadSchedulePersonList();
     }
 
 
@@ -68,16 +71,38 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
-                int i = 0;
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    List<HashMap<String, String>> temp = (List<HashMap<String, String>>) singleSnapshot.getValue();
-                    for(HashMap<String, String> item : temp) {
-                        String day = item.get("date");
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    List<String> temp = (List<String>) singleSnapshot.getValue();
+                    for (int i = 0; i < temp.size(); i++) {
+                        String day = (String) temp.get(i);
                         list.add(day);
                     }
-                    i++;
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG", "ERROR!");
+            }
+        });
+    }
+
+    private void loadSchedulePersonList() {
+        Query messages = FirebaseDatabase.getInstance().getReference().child("messeges").orderByKey().equalTo(f_user.getUid());
+
+        messages.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                arr.clear();
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    List<String> temp = (List<String>) singleSnapshot.getValue();
+                    for (int i = 0; i < temp.size(); i++) {
+                        String day = (String) temp.get(i);
+                        arr.add(day);
+                    }
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
