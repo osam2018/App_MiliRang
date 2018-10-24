@@ -19,17 +19,19 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
     private Activity activity;
     private List<String> mdays;
+    private List<String> names;
 
-    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays) {
+    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays, List<String> names) {
         this.activity = activity;
         this.mdays = mdays;
+        this.names = names;
     }
 
     @NonNull
     @Override
     public ScheduleRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.report_item, viewGroup, false); // report_item => act...sche...
+                .inflate(R.layout.schedule_item, viewGroup, false); // report_item => act...sche...
 
         ViewHolder viewHolder = new ViewHolder(view);
 
@@ -39,9 +41,17 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     @Override
     public void onBindViewHolder(@NonNull ScheduleRecyclerViewAdapter.ViewHolder viewHolder, int i) {
         String data = mdays.get(i);
-
-        // 데이터 결합
         viewHolder.title.setText(data);
+
+        if(i < names.size() && mdays.indexOf(names.get(i)) != -1) {
+            String name = names.get(i);
+            viewHolder.name.setText("내 당직");
+        }
+        else
+        {
+            viewHolder.name.setText("Not Mine!");
+        }
+        // 데이터 결합
     }
 
     @Override
@@ -51,10 +61,12 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
+        TextView name;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.rpt_title);
+            title = (TextView) itemView.findViewById(R.id.schedule_title);
+            name = (TextView) itemView.findViewById(R.id.schedule_person);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

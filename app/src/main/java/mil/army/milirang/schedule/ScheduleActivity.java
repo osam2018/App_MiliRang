@@ -17,6 +17,7 @@ import com.google.firebase.database.*;
 import com.squareup.timessquare.CalendarCellDecorator;
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -95,11 +96,12 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 List daylist = calendar.getSelectedDates();
-                ref.child(f_user.getUid()).setValue(daylist); // 버튼을 누르면 선택한 날짜를 넘겨줌
-
+                List<String> days = new ArrayList<String>();
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
+                    days.add(day);
                     Toast.makeText(ScheduleActivity.this, day, Toast.LENGTH_SHORT).show();
+                ref.child(f_user.getUid()).setValue(days); // 버튼을 누르면 선택한 날짜를 넘겨줌
                 }
             }
         });
@@ -107,10 +109,16 @@ public class ScheduleActivity extends AppCompatActivity {
         b_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                List<String> templist = new ArrayList<String>();
+                templist.add("2018-10-28");
+                FirebaseDatabase.getInstance().getReference("messeges").child(f_user.getUid()).setValue(templist); // 버튼을 누르면 창이넘어가면서
+
                 Intent intent = new Intent(ScheduleActivity.this, ScheduleScrollingActivity.class);
                 ScheduleActivity.this.startActivity(intent);
             }
         });
+
 
 
         t.setText(String.valueOf(calendar.getSelectedDates().size()));
