@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mil.army.milirang.report.ReportCreateActivity;
+import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity
     ReportRecyclerViewAdapter mReportRecyclerViewAdapter;
     List<ReportVO> mReportList;
 
-    ReportRecyclerViewAdapter mContactRecyclerViewAdapter;
-    List<UserVO> mContactList;
+    boolean reportViewPrepared = false;
+    boolean scheduleViewPrepared = false;
 
 
     @Override
@@ -89,35 +89,12 @@ public class MainActivity extends AppCompatActivity
 
         openReportView();
 
-        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
-        Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
-        setSupportActionBar(report_toolbar);
-        setSupportActionBar(schedule_toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
-                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        ActionBarDrawerToggle schedule_toggle = new ActionBarDrawerToggle(
-                this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(report_toggle);
-        drawer.addDrawerListener(schedule_toggle);
-        report_toggle.syncState();
-        schedule_toggle.syncState();
+        prepareReportView();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mReportRecyclerView = findViewById(R.id.report_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mReportRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mReportList = new ArrayList<>();
-
-        mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
-        mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
-        mReportRecyclerView.addItemDecoration(dividerItemDecoration);
 
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -144,14 +121,55 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void prepareReportView() {
+
+        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        setSupportActionBar(report_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
+                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(report_toggle);
+        report_toggle.syncState();
+
+
+        mReportRecyclerView = findViewById(R.id.report_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mReportRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mReportList = new ArrayList<>();
+
+        mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
+        mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
+        mReportRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        reportViewPrepared = true;
+    }
+
+    private void prepareScheduleView() {
+        Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
+        setSupportActionBar(schedule_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle schedule_toggle = new ActionBarDrawerToggle(
+                this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(schedule_toggle);
+        schedule_toggle.syncState();
+        scheduleViewPrepared = true;
+    }
+
     /**
      * Loads Reports from "report" table from firebase database.
      */
     private void loadReportList() {
-        Query reportRef = mDatabase.child("report")
-                                .orderByChild("rpt_timestamp")
-                                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid(), "rpt_receiver");
+        Query reportRef = mDatabase.child("report_receiver")
+                .orderByChild("receiver_id")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        mReportList.clear();
+        mReportRecyclerViewAdapter.notifyDataSetChanged();
 
         reportRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -159,11 +177,21 @@ public class MainActivity extends AppCompatActivity
 
                 mReportList.clear();
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    ReportVO rpt = singleSnapshot.getValue(ReportVO.class);
-                    mReportList.add(rpt);
-                }
+                    ReportReceiverVO rpt = singleSnapshot.getValue(ReportReceiverVO.class);
+                    mDatabase.child("report")
+                            .child(rpt.getReport_id())
+                            .addValueEventListener(new ValueEventListener() {
 
-                mReportRecyclerViewAdapter.notifyDataSetChanged();
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    ReportVO r = dataSnapshot.getValue(ReportVO.class);
+                                    mReportList.add(r);
+                                    mReportRecyclerViewAdapter.notifyDataSetChanged();
+                                }
+                                @Override  public void onCancelled(@NonNull DatabaseError databaseError) {}
+                            });
+
+                }
 
             }
 
@@ -172,6 +200,29 @@ public class MainActivity extends AppCompatActivity
                 Log.d("TAG", "ERROR!");
             }
         });
+    }
+
+    private void loadSentReportList() {
+        mReportList.clear();
+        mReportRecyclerViewAdapter.notifyDataSetChanged();
+
+        mDatabase.child("report")
+                .orderByChild("rpt_sender")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mReportList.clear();
+                        for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            ReportVO r = singleSnapshot.getValue(ReportVO.class);
+                            mReportList.add(r);
+                        }
+                        mReportRecyclerViewAdapter.notifyDataSetChanged();
+                    }
+                    @Override  public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
     }
 
     private void openReportView() {
@@ -239,15 +290,23 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_report_inbox) {
+            this.setTitle("보고서 수신함");
+            if(!reportViewPrepared) prepareReportView();
             openReportView();
+            loadReportList();
+        } else if (id == R.id.nav_report_sent) {
+            this.setTitle("보고서 송신함");
+            if(!reportViewPrepared) prepareReportView();
+            openReportView();
+            loadSentReportList();
         } else if (id == R.id.nav_schedule_event) {
+            this.setTitle("이벤트");
+            if(!scheduleViewPrepared) prepareScheduleView();
             openScheduleView();
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);
-        }  else if (id == R.id.nav_contact_list) {
-            openScheduleView();
-    }
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
