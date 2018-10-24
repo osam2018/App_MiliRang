@@ -33,6 +33,7 @@ public class ScheduleActivity extends AppCompatActivity {
     TextView t;
     Button b;
     Button b_list;
+    Button my_set;
     CalendarPickerView calendar;
     ScheduleVO vo;
     DatabaseReference ref;
@@ -45,6 +46,7 @@ public class ScheduleActivity extends AppCompatActivity {
         t = (TextView) findViewById(R.id.test);
         b = (Button) findViewById(R.id.summit_button);
         b_list = (Button) findViewById(R.id.to_mylist);
+        my_set = (Button) findViewById(R.id.my_set_buttion);
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
@@ -109,16 +111,25 @@ public class ScheduleActivity extends AppCompatActivity {
         b_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                List<String> templist = new ArrayList<String>();
-                templist.add("2018-10-28");
-                FirebaseDatabase.getInstance().getReference("messeges").child(f_user.getUid()).setValue(templist); // 버튼을 누르면 창이넘어가면서
-
                 Intent intent = new Intent(ScheduleActivity.this, ScheduleScrollingActivity.class);
                 ScheduleActivity.this.startActivity(intent);
             }
         });
 
+        my_set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List daylist = calendar.getSelectedDates();
+                List<String> days = new ArrayList<String>();
+                for(int i = 0; i < daylist.size(); i++) {
+                    String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
+                    days.add(day);
+                }
+                Toast.makeText(ScheduleActivity.this, "내 당직으로 설정완료", Toast.LENGTH_SHORT).show();
+                FirebaseDatabase.getInstance().getReference("messeges").child(f_user.getUid()).setValue(days);
+
+            }
+        });
 
 
         t.setText(String.valueOf(calendar.getSelectedDates().size()));
