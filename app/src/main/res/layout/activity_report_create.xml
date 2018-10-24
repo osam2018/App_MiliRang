@@ -18,19 +18,28 @@
     <EditText
         android:id="@+id/rpt_create_body"
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="250dp"
         android:ems="10"
         android:hint="본문"
         android:inputType="textMultiLine"
         android:textAlignment="viewStart" />
 
-    <EditText
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="수신인" />
+
+    <MultiAutoCompleteTextView
         android:id="@+id/rpt_create_receiver"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:ems="10"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/rpt_create_submit"
         android:hint="수신인"
-        android:inputType="textMultiLine"
-        android:textAlignment="viewStart" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="작성" />
 
 </LinearLayout>

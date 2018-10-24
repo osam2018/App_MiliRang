@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -56,32 +58,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build()
-        );
-
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .build(),
-                    RC_SIGN_IN
-            );
-        } else {
-            Snackbar.make(findViewById(R.id.report_view), FirebaseAuth.getInstance().getCurrentUser().getDisplayName() + "님, 환영합니다!", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        /*
-
-        ReportVO report = new ReportVO("title", "body", "20181023",
-                                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                                        Arrays.asList(FirebaseAuth.getInstance().getCurrentUser().getUid()));
-        mDatabase.child("report").push().setValue(report);
-        */
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -137,14 +114,36 @@ public class MainActivity extends AppCompatActivity
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
         mReportRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        loadReportList();
+
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN
+            );
+        } else {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            Snackbar.make(findViewById(R.id.report_view), user.getDisplayName() + "님, 환영합니다!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            mDatabase.child("users").child(user.getUid()).setValue(user);
+            loadReportList();
+        }
+
     }
 
     /**
      * Loads Reports from "report" table from firebase database.
      */
     private void loadReportList() {
-        DatabaseReference reportRef = mDatabase.child("report");
+        Query reportRef = mDatabase.child("report")
+                                .orderByChild("rpt_timestamp")
+                                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid(), "rpt_receiver");
 
 
         reportRef.addValueEventListener(new ValueEventListener() {
@@ -186,6 +185,8 @@ public class MainActivity extends AppCompatActivity
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if(resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                mDatabase.child("users").child(user.getUid()).setValue(user);
+                loadReportList();
             } else {
 
             }

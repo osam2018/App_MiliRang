@@ -4,39 +4,43 @@ import java.io.Serializable;
 
 public class UserVO implements Serializable {
 
-    private String usr_name;
-    private String usr_email;
-    private String usr_milname;
+    private String email;
+    private String displayName;
+    private String uid;
+    private String milname;
 
     public UserVO() {}
 
-    public UserVO(String usr_name, String usr_email, String usr_milname) {
-        this.usr_name = usr_name;
-        this.usr_email = usr_email;
-        this.usr_milname = usr_milname;
+
+    public String getEmail() {
+        return email;
     }
 
-    public String getUsr_name() {
-        return usr_name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setUsr_name(String usr_name) {
-        this.usr_name = usr_name;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public String getUsr_email() {
-        return usr_email;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
-    public void setUsr_email(String usr_email) {
-        this.usr_email = usr_email;
+    public String getUid() {
+        return uid;
     }
 
-    public String getUsr_milname() {
-        return usr_milname;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public void setUsr_milname(String usr_milname) {
-        this.usr_milname = usr_milname;
+    public String getMilname() {
+        return milname;
+    }
+
+    public void setMilname(String milname) {
+        this.milname = milname;
     }
 }
