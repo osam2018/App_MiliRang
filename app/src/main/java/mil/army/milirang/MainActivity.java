@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity
     ReportRecyclerViewAdapter mReportRecyclerViewAdapter;
     List<ReportVO> mReportList;
 
+    boolean reportViewPrepared = false;
+    boolean scheduleViewPrepared = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,35 +89,12 @@ public class MainActivity extends AppCompatActivity
 
         openReportView();
 
-        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
-        Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
-        setSupportActionBar(report_toolbar);
-        setSupportActionBar(schedule_toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
-                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        ActionBarDrawerToggle schedule_toggle = new ActionBarDrawerToggle(
-                this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(report_toggle);
-        drawer.addDrawerListener(schedule_toggle);
-        report_toggle.syncState();
-        schedule_toggle.syncState();
+        prepareReportView();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mReportRecyclerView = findViewById(R.id.report_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mReportRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mReportList = new ArrayList<>();
-
-        mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
-        mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
-        mReportRecyclerView.addItemDecoration(dividerItemDecoration);
 
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -137,6 +117,45 @@ public class MainActivity extends AppCompatActivity
             loadReportList();
         }
 
+    }
+
+    private void prepareReportView() {
+
+        Toolbar report_toolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        setSupportActionBar(report_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle report_toggle = new ActionBarDrawerToggle(
+                this, drawer, report_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(report_toggle);
+        report_toggle.syncState();
+
+
+        mReportRecyclerView = findViewById(R.id.report_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mReportRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mReportList = new ArrayList<>();
+
+        mReportRecyclerViewAdapter = new ReportRecyclerViewAdapter(this, mReportList);
+        mReportRecyclerView.setAdapter(mReportRecyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mReportRecyclerView.getContext(), linearLayoutManager.getOrientation());
+        mReportRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        reportViewPrepared = true;
+    }
+
+    private void prepareScheduleView() {
+        Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
+        setSupportActionBar(schedule_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle schedule_toggle = new ActionBarDrawerToggle(
+                this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(schedule_toggle);
+        schedule_toggle.syncState();
+        scheduleViewPrepared = true;
     }
 
     /**
@@ -270,21 +289,22 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_report_inbox) {
             this.setTitle("보고서 수신함");
+            if(!reportViewPrepared) prepareReportView();
             openReportView();
             loadReportList();
         } else if (id == R.id.nav_report_sent) {
             this.setTitle("보고서 송신함");
+            if(!reportViewPrepared) prepareReportView();
             openReportView();
             loadSentReportList();
         } else if (id == R.id.nav_schedule_event) {
             this.setTitle("이벤트");
+            if(!scheduleViewPrepared) prepareScheduleView();
             openScheduleView();
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);
-        }  else if (id == R.id.nav_contact_list) {
-            openScheduleView();
-    }
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
