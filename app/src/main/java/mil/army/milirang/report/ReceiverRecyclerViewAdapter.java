@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -16,40 +15,40 @@ import mil.army.milirang.MainActivity;
 import mil.army.milirang.R;
 import mil.army.milirang.report.vo.ReportVO;
 
-public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecyclerViewAdapter.ViewHolder> {
+class ReceiverRecyclerViewAdapter extends RecyclerView.Adapter<ReceiverRecyclerViewAdapter.ViewHolder> {
+
 
     private Activity activity;
-    private List<ReportVO> report;
+    private List<String> receiver;
     private MainActivity ac;
 
-    public ReportRecyclerViewAdapter(MainActivity activity, List<ReportVO> report) {
+    public ReceiverRecyclerViewAdapter(ReportDetailActivity activity, List<String> receiver) {
         this.activity = activity;
-        this.report = report;
+        this.receiver = receiver;
     }
 
     @NonNull
     @Override
-    public ReportRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ReceiverRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.report_item, viewGroup, false);
+                .inflate(R.layout.report_detail_receiver, viewGroup, false);
 
-        ViewHolder viewHolder = new ViewHolder(view);
+        ReceiverRecyclerViewAdapter.ViewHolder viewHolder = new ReceiverRecyclerViewAdapter.ViewHolder(view);
 
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReportRecyclerViewAdapter.ViewHolder viewHolder, int i) {
-        ReportVO data = report.get(i);
+    public void onBindViewHolder(@NonNull ReceiverRecyclerViewAdapter.ViewHolder viewHolder, int i) {
+        String data = receiver.get(i);
 
         // 데이터 결합
-        viewHolder.title.setText(data.getRpt_title());
-        viewHolder.timestamp.setText(data.getRpt_timestamp());
+        viewHolder.title.setText(data);
     }
 
     @Override
     public int getItemCount() {
-        return report.size();
+        return receiver.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -58,23 +57,18 @@ public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<ReportRecycl
 
         public ViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.rpt_title);
-            timestamp = (TextView) itemView.findViewById(R.id.rpt_timetsamp);
+            title = (TextView) itemView.findViewById(R.id.report_detail_receiver);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ReportDetailActivity.class);
                     int i = 0;
-                    intent.putExtra("report", report.get(getAdapterPosition()));
+                    intent.putExtra("report", receiver.get(getAdapterPosition()));
                     view.getContext().startActivity(intent);
                 }
             });
         }
     }
 
-    private void removeItemView(int position) {
-        report.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, report.size()); // 지워진 만큼 다시 채워넣기.
-    }
+
 }
