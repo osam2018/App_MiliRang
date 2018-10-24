@@ -137,6 +137,8 @@ public class MainActivity extends AppCompatActivity
             Snackbar.make(findViewById(R.id.report_view), user.getDisplayName() + "님, 환영합니다!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             mDatabase.child("users").child(user.getUid()).setValue(user);
+
+            ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_name)).setText(user.getDisplayName());
             loadReportList();
         }
 
