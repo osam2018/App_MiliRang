@@ -52,6 +52,24 @@ public class ReportDetailActivity extends AppCompatActivity {
         senderview.setText(report.getRpt_sender());
         timestampviewview.setText(report.getRpt_timestamp());
 
+        mDatabase.child("report_receiver")
+                .orderByChild("report_id")
+                .equalTo(report.getRpt_id())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            ReportReceiverVO rvo = singleSnapshot.getValue(ReportReceiverVO.class);
+                            if(rvo.getReceiver_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                String key = singleSnapshot.getKey();
+                                mDatabase.child("report_receiver").child(key).child("received").setValue(true);
+                                break;
+                            }
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
         mDatabase.child("users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
