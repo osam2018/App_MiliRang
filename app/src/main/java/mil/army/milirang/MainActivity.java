@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        ValuesFromFirebase base = new ValuesFromFirebase(); //데이터베이스에서 필요한 정보들을 static으로 띄워줌
+      //  ValuesFromFirebase base = new ValuesFromFirebase(); //데이터베이스에서 필요한 정보들을 static으로 띄워줌
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
