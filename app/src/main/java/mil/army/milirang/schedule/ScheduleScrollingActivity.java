@@ -93,9 +93,9 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     }
 
     private void loadSchedulePersonList() {
-        Query messages = FirebaseDatabase.getInstance().getReference().child("messeges").orderByKey().equalTo(f_user.getUid());
+        Query workdays = FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().equalTo(f_user.getUid());
 
-        messages.addValueEventListener(new ValueEventListener() {
+        workdays.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 arr.clear();
@@ -116,7 +116,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         });
 
 
-        FirebaseDatabase.getInstance().getReference().child("messeges").orderByKey().addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 

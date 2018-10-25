@@ -33,7 +33,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     private Activity activity;
     private List<String> mdays;
     private List<String> selected;
-    private HashMap<String, Object> uids;
+    private HashMap<String, Object> uids; //받은 이름들;
     private int num;
     private List<UserVO> refuids;
 

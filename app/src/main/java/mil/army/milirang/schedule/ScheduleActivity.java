@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import mil.army.milirang.R;
@@ -38,6 +39,9 @@ public class ScheduleActivity extends AppCompatActivity {
     ScheduleVO vo;
     DatabaseReference ref;
     FirebaseUser f_user;
+    HashMap<String, Object> workdays;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class ScheduleActivity extends AppCompatActivity {
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
+        workdays = new HashMap<String, Object>();
 
         List<String> name = new ArrayList<String>();
         name.add(f_user.getDisplayName());
@@ -127,12 +132,33 @@ public class ScheduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List daylist = calendar.getSelectedDates();
                 List<String> days = new ArrayList<String>();
+
+                FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+
+                        for(String tmp : workdays.keySet())
+                        {
+                            Log.d("tag", "tmp : "+tmp);
+                            ArrayList<String> array_here = (ArrayList<String>) workdays.get(tmp);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
+                    //if there is already value that matches with day
                     days.add(day);
                 }
                 Toast.makeText(ScheduleActivity.this, "내 당직으로 설정완료", Toast.LENGTH_SHORT).show();
-                FirebaseDatabase.getInstance().getReference("messeges").child(f_user.getUid()).setValue(days);
+                FirebaseDatabase.getInstance().getReference("workdays").child(f_user.getUid()).setValue(days);
 
             }
         });
