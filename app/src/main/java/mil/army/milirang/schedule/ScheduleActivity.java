@@ -51,6 +51,12 @@ public class ScheduleActivity extends AppCompatActivity {
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
 
+        List<String> name = new ArrayList<String>();
+        name.add(f_user.getDisplayName());
+
+        ref.getDatabase().getReference().child("uids").getDatabase().getReference().child(f_user.getUid()).setValue(name);
+
+        /*
         ArrayList<Date> info = new ArrayList<Date>();
 
         String day1 = "2018-10-25";
@@ -63,7 +69,7 @@ public class ScheduleActivity extends AppCompatActivity {
         {
             Log.d("Wrong Format", "Wrong Format!");
         }
-
+*/
         Calendar firstday = Calendar.getInstance();
         firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
