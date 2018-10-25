@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +43,8 @@ import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
+import mil.army.milirang.user.ContactRecyclerViewAdapter;
+import mil.army.milirang.user.vo.UserVO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,8 +56,13 @@ public class MainActivity extends AppCompatActivity
     ReportRecyclerViewAdapter mReportRecyclerViewAdapter;
     List<ReportVO> mReportList;
 
+    RecyclerView mContactRecyclerView;
+    ContactRecyclerViewAdapter mContactRecyclerViewAdapter;
+    List<UserVO> mContactList;
+
     boolean reportViewPrepared = false;
     boolean scheduleViewPrepared = false;
+    boolean contactViewPrepared = false;
 
 
     @Override
@@ -158,7 +166,32 @@ public class MainActivity extends AppCompatActivity
         schedule_toggle.syncState();
         scheduleViewPrepared = true;
     }
+    private void prepareContactView() {
 
+        Toolbar contact_toolbar = (Toolbar) findViewById(R.id.contact_toolbar);
+        setSupportActionBar(contact_toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle contact_toggle = new ActionBarDrawerToggle(
+                this, drawer, contact_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(contact_toggle);
+        contact_toggle.syncState();
+
+
+        mContactRecyclerView = findViewById(R.id.contact_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mContactRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mContactList = new ArrayList<>();
+
+        mContactRecyclerViewAdapter = new ContactRecyclerViewAdapter(this, mContactList);
+        mContactRecyclerView.setAdapter(mContactRecyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mContactRecyclerView.getContext(), linearLayoutManager.getOrientation());
+        mContactRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        contactViewPrepared = true;
+    }
     /**
      * Loads Reports from "report" table from firebase database.
      */
@@ -227,14 +260,50 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Loads Reports from "contact" table from firebase database.
+     */
+    private void loadContactList() {
+        Query contactRef = mDatabase.child("users");
+
+        mContactList.clear();
+        mContactRecyclerViewAdapter.notifyDataSetChanged();
+
+        contactRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                mContactList.clear();
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    UserVO user = singleSnapshot.getValue(UserVO.class);
+                    mContactList.add(user);
+                }
+                mContactRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG", "ERROR!");
+            }
+        });
+    }
+
     private void openReportView() {
-        findViewById(R.id.schedule_view).setVisibility(View.INVISIBLE);
         findViewById(R.id.report_view).setVisibility(View.VISIBLE);
+        findViewById(R.id.schedule_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.contact_view).setVisibility(View.INVISIBLE);
     }
 
     private void openScheduleView() {
-        findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
+        findViewById(R.id.contact_view).setVisibility(View.INVISIBLE);
+    }
+
+    private void openContactView() {
+        findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.schedule_view).setVisibility(View.INVISIBLE);
+        findViewById(R.id.contact_view).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -308,6 +377,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);
+        } else if (id == R.id.nav_contact_list) {
+            this.setTitle("부대원 연락처");
+            if(!contactViewPrepared) prepareContactView();
+            openContactView();
+            loadContactList();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
