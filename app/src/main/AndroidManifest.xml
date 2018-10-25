@@ -33,6 +33,10 @@
             android:label="이벤트 생성"
             android:launchMode="singleTop"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".event.EventDetailActivity"
+            android:label="이벤트 상세"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".schedule.ScheduleActivity"
             android:label="@string/schedule_create_title" />

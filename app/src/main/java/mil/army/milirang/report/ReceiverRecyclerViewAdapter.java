@@ -3,6 +3,7 @@ package mil.army.milirang.report;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +16,14 @@ import mil.army.milirang.MainActivity;
 import mil.army.milirang.R;
 import mil.army.milirang.report.vo.ReportVO;
 
-class ReceiverRecyclerViewAdapter extends RecyclerView.Adapter<ReceiverRecyclerViewAdapter.ViewHolder> {
+public class ReceiverRecyclerViewAdapter extends RecyclerView.Adapter<ReceiverRecyclerViewAdapter.ViewHolder> {
 
 
     private Activity activity;
     private List<String> receiver;
     private MainActivity ac;
 
-    public ReceiverRecyclerViewAdapter(ReportDetailActivity activity, List<String> receiver) {
+    public ReceiverRecyclerViewAdapter(AppCompatActivity activity, List<String> receiver) {
         this.activity = activity;
         this.receiver = receiver;
     }

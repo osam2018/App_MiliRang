@@ -1,5 +1,6 @@
 package mil.army.milirang;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -49,6 +51,7 @@ import java.util.List;
 
 import mil.army.milirang.event.EventCalendarItemView;
 import mil.army.milirang.event.EventCreateActivity;
+import mil.army.milirang.event.EventDetailActivity;
 import mil.army.milirang.event.vo.EventReceiverVO;
 import mil.army.milirang.event.vo.EventVO;
 import mil.army.milirang.report.ReportCreateActivity;
@@ -373,6 +376,8 @@ public class MainActivity extends AppCompatActivity
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // New Data found. clear calendar events
+                        clearCalendar();
                         for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             // Retrieve event now.
                             EventReceiverVO eventReceiverVO = snapshot.getValue(EventReceiverVO.class);
@@ -381,11 +386,12 @@ public class MainActivity extends AppCompatActivity
                                     .child(eventReceiverVO.getEvent_id())
                                     .addValueEventListener(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            EventVO event = dataSnapshot.getValue(EventVO.class);
+                                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                            final EventVO event = dataSnapshot.getValue(EventVO.class);
                                             if(event == null) return;
                                             // Convert date to calendar
-                                            Calendar c = event.getEvent_from();
+                                            Calendar c = Calendar.getInstance();
+                                            c.setTimeInMillis(event.getEvent_from());
 
                                             // get calendar item view
                                             EventCalendarItemView item = getDateView(c.get(Calendar.DATE));
@@ -393,12 +399,24 @@ public class MainActivity extends AppCompatActivity
                                             TextView eventitem = new TextView(MainActivity.this);
                                             eventitem.setText(event.getEvent_title());
 
-                                            ViewGroup.LayoutParams layout = eventitem.getLayoutParams();
-                                            layout.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                                            ViewGroup.LayoutParams layout = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
 
                                             eventitem.setLayoutParams(layout);
+                                            eventitem.setTextSize(10);
+                                            eventitem.setSingleLine(true);
 
-                                            item.addView(eventitem);
+                                            eventitem.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent(MainActivity.this, EventDetailActivity.class);
+                                                    event.setEvent_id(dataSnapshot.getKey());
+                                                    intent.putExtra("event", event);
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+                                            LinearLayout linear = item.findViewById(R.id.event_calendar_event_list);
+                                            linear.addView(eventitem);
                                         }
                                         @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
                                     });
@@ -409,6 +427,18 @@ public class MainActivity extends AppCompatActivity
                 });
 
 
+    }
+
+    private void clearCalendar() {
+        TableLayout cal = findViewById(R.id.event_calendar);
+        for(int i = 0 ; i < 6 ; i++) {
+            TableRow row = (TableRow) cal.getChildAt(i);
+            for(int j = 0 ; j < 7 ; j++) {
+                View item = row.getChildAt(j);
+                LinearLayout linear = item.findViewById(R.id.event_calendar_event_list);
+                linear.removeAllViews();
+            }
+        }
     }
 
     private void openReportView() {

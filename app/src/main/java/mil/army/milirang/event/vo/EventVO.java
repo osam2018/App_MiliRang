@@ -8,8 +8,9 @@ public class EventVO implements Serializable {
 
     private String event_id;
     private String event_title;
-    private Calendar event_from;
-    private Calendar event_to;
+    private long event_from;
+    private long event_to;
+    private String event_owner;
     private String event_detail;
     private String event_location;
 
@@ -29,19 +30,19 @@ public class EventVO implements Serializable {
         this.event_title = event_title;
     }
 
-    public Calendar getEvent_from() {
+    public long getEvent_from() {
         return event_from;
     }
 
-    public void setEvent_from(Calendar event_from) {
+    public void setEvent_from(long event_from) {
         this.event_from = event_from;
     }
 
-    public Calendar getEvent_to() {
+    public long getEvent_to() {
         return event_to;
     }
 
-    public void setEvent_to(Calendar event_to) {
+    public void setEvent_to(long event_to) {
         this.event_to = event_to;
     }
 
@@ -59,5 +60,13 @@ public class EventVO implements Serializable {
 
     public void setEvent_location(String event_location) {
         this.event_location = event_location;
+    }
+
+    public String getEvent_owner() {
+        return event_owner;
+    }
+
+    public void setEvent_owner(String event_owner) {
+        this.event_owner = event_owner;
     }
 }
