@@ -117,7 +117,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        showLogin();
 
+    }
+
+    private void showLogin() {
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build()
@@ -140,7 +146,6 @@ public class MainActivity extends AppCompatActivity
             ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_name)).setText(user.getDisplayName());
             loadReportList();
         }
-
     }
 
     private void prepareReportView() {
@@ -360,12 +365,16 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadCalendar() {
 
+        clearCalendarDates();
+
         // prepare month labels
         TextView month_label = findViewById(R.id.event_month_label);
+        TextView year_label = findViewById(R.id.event_year_label);
         Button next_button = findViewById(R.id.event_next_month_btn);
         Button prev_button = findViewById(R.id.event_prev_month_btn);
         final int current_month = event_month + 1;
 
+        year_label.setText(event_year + "");
         month_label.setText(current_month + "월");
         if(current_month == 12)
             next_button.setText(1 + "월");
@@ -405,6 +414,7 @@ public class MainActivity extends AppCompatActivity
 
         // prepare calendar dates
         Calendar cal = (Calendar) Calendar.getInstance().clone();
+        cal.set(event_year,event_month,1);
 
         // display calendar dates
         for(int i = 0 ; i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i++) {
@@ -590,6 +600,9 @@ public class MainActivity extends AppCompatActivity
             if(!contactViewPrepared) prepareContactView();
             openContactView();
             loadContactList();
+        } else if(id == R.id.nav_etc_logout) {
+            FirebaseAuth.getInstance().signOut();
+            showLogin();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
