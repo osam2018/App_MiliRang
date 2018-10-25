@@ -26,16 +26,16 @@ import mil.army.milirang.R;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
 
+import static mil.army.milirang.schedule.ValuesFromFirebase.*;
+
 public class ScheduleScrollingActivity extends AppCompatActivity {
 
     RecyclerView recyclerview;
     RecyclerView.LayoutManager layoutmanager;
-    ScheduleRecyclerViewAdapter adapter;
-    List<String> list;
     List<String> arr;
-    HashMap<String, Object> uids;
     DatabaseReference ref;
-    public static FirebaseUser f_user;
+
+    public static ScheduleRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +44,8 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
 
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
         recyclerview = (RecyclerView) findViewById(R.id.schedule_list);
-        f_user = FirebaseAuth.getInstance().getCurrentUser();
-        list = new ArrayList<String>();
         arr = new ArrayList<String>();
-        uids = new HashMap<String, Object>();
+        adapter = new ScheduleRecyclerViewAdapter(this, arr);
 
         // Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
 
@@ -55,19 +53,18 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
 
         layoutmanager = new LinearLayoutManager(this);
         recyclerview.setLayoutManager(layoutmanager);
-
-        adapter = new ScheduleRecyclerViewAdapter(this, list, arr, uids);
         recyclerview.setAdapter(adapter);
 
-        loadScheduleList();
+//        loadScheduleList();
         loadSchedulePersonList();
 
     }
 
-
     /**
      * Loads Reports from "schedule" table from firebase database.
      */
+
+    /*
     private void loadScheduleList() {
         Query schedules = ref.orderByKey().equalTo(f_user.getUid());
 
@@ -90,7 +87,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
                 Log.d("TAG", "ERROR!");
             }
         });
-    }
+    }*/
 
     private void loadSchedulePersonList() {
         Query workdays = FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().equalTo(f_user.getUid());
@@ -112,24 +109,6 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d("TAG", "ERROR!");
-            }
-        });
-
-        FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-
-                    for(String tmp : uids.keySet())
-                    {
-                        Log.d("tag", "tmp : "+tmp);
-                        ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
-                    }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }

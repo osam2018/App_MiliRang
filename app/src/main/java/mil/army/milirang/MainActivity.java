@@ -56,6 +56,7 @@ import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
+import mil.army.milirang.schedule.ValuesFromFirebase;
 import mil.army.milirang.user.ContactRecyclerViewAdapter;
 import mil.army.milirang.user.vo.UserVO;
 
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        ValuesFromFirebase base = new ValuesFromFirebase(); //데이터베이스에서 필요한 정보들을 static으로 띄워줌
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -111,9 +113,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build()
