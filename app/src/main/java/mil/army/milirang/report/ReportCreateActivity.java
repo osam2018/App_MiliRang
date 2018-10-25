@@ -1,6 +1,5 @@
 package mil.army.milirang.report;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -8,11 +7,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.MultiAutoCompleteTextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,7 +52,7 @@ public class ReportCreateActivity extends AppCompatActivity {
                     UserVO user = singleSnapshot.getValue(UserVO.class);
                     mUserList.add(user);
                 }
-                MultiAutoCompleteTextView auto = findViewById(R.id.rpt_create_receiver);
+                MultiAutoCompleteTextView auto = findViewById(R.id.report_create_receiver);
 
                 ArrayAdapter<UserVO> users = new ArrayAdapter<>(ReportCreateActivity.this, R.layout.autocomplete_tag, (UserVO[]) mUserList.toArray(new UserVO[0]));
                 auto.setAdapter(users);
@@ -68,7 +65,7 @@ public class ReportCreateActivity extends AppCompatActivity {
             }
         });
 
-        Button submitButton = (Button) findViewById(R.id.rpt_create_submit);
+        Button submitButton = (Button) findViewById(R.id.report_create_submit);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +86,7 @@ public class ReportCreateActivity extends AppCompatActivity {
 
                 DatabaseReference report_receiver = mDatabase.child("report_receiver");
 
-                MultiAutoCompleteTextView receiver_input = findViewById(R.id.rpt_create_receiver);
+                MultiAutoCompleteTextView receiver_input = findViewById(R.id.report_create_receiver);
                 String[] rcv_names = receiver_input.getText().toString().split(",");
 
                 for(String rcv_name : rcv_names) {

@@ -31,12 +31,12 @@
         android:text="수신인" />
 
     <MultiAutoCompleteTextView
-        android:id="@+id/rpt_create_receiver"
+        android:id="@+id/report_create_receiver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/rpt_create_submit"
+        android:id="@+id/report_create_submit"
         android:hint="수신인"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

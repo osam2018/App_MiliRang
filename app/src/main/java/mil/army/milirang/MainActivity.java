@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +21,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
@@ -36,8 +43,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import mil.army.milirang.event.EventCalendarItemView;
+import mil.army.milirang.event.EventCreateActivity;
+import mil.army.milirang.event.vo.EventReceiverVO;
+import mil.army.milirang.event.vo.EventVO;
 import mil.army.milirang.report.ReportCreateActivity;
 import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
@@ -64,6 +77,8 @@ public class MainActivity extends AppCompatActivity
     boolean eventViewPrepared = false;
     boolean contactViewPrepared = false;
 
+    int event_year;
+    int event_month;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +91,6 @@ public class MainActivity extends AppCompatActivity
         report_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, ReportCreateActivity.class);
                 MainActivity.this.startActivity(intent);
             }
@@ -87,9 +100,7 @@ public class MainActivity extends AppCompatActivity
         schedule_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+                Intent intent = new Intent(MainActivity.this, EventCreateActivity.class);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -164,6 +175,15 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(schedule_toggle);
         schedule_toggle.syncState();
+
+        // get current date
+        Calendar c = Calendar.getInstance();
+        event_year = c.get(Calendar.YEAR);
+        event_month = c.get(Calendar.MONTH);
+
+        // load calendar view
+        loadCalendar();
+
         eventViewPrepared = true;
     }
     private void prepareContactView() {
@@ -237,6 +257,9 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Loads report list (sent)
+     */
     private void loadSentReportList() {
         mReportList.clear();
         mReportRecyclerViewAdapter.notifyDataSetChanged();
@@ -288,6 +311,107 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private EventCalendarItemView getDateView(int date) {
+        int rowindex = 0, colindex = 0;
+        TableLayout calendar_table = findViewById(R.id.event_calendar);
+
+        Calendar cal = (Calendar) Calendar.getInstance().clone();
+        cal.set(event_year, event_month, 1);
+
+        int first_day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+
+        rowindex = (first_day_of_week + date) / 7;
+        colindex = (first_day_of_week + date) % 7;
+
+        TableRow firstRow = (TableRow) calendar_table.getChildAt(rowindex);
+
+        EventCalendarItemView item = (EventCalendarItemView) firstRow.getChildAt(colindex);
+        return item;
+    }
+
+    /**
+     * Loads Calendar view
+     */
+    private void loadCalendar() {
+
+        // prepare month labels
+        TextView month_label = findViewById(R.id.event_month_label);
+        Button next_button = findViewById(R.id.event_next_month_btn);
+        Button prev_button = findViewById(R.id.event_prev_month_btn);
+        int current_month = event_month + 1;
+
+        month_label.setText(current_month + "월");
+        if(current_month == 12)
+            next_button.setText(1 + "월");
+        else
+            next_button.setText((current_month + 1) + "월");
+
+        if(current_month == 1)
+            prev_button.setText(12 + "월");
+        else
+            prev_button.setText((current_month - 1) + "월");
+
+        // prepare calendar dates
+        Calendar cal = (Calendar) Calendar.getInstance().clone();
+
+        // display calendar dates
+        for(int i = 0 ; i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i++) {
+            EventCalendarItemView item = getDateView(i);
+            TextView date_label = item.findViewById(R.id.event_calendar_item_date);
+            date_label.setText(i + 1 + "");
+        }
+        loadEvents();
+    }
+
+    /**
+     * Loads Calendar Events
+     */
+    private void loadEvents() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Query eventRef = mDatabase.child("event_receiver").child(event_year+"").child(event_month + 1+"");
+        eventRef.orderByChild("receiver_id")
+                .equalTo(user.getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Retrieve event now.
+                            EventReceiverVO eventReceiverVO = snapshot.getValue(EventReceiverVO.class);
+
+                            mDatabase.child("event").child(event_year+"").child(event_month+1+"")
+                                    .child(eventReceiverVO.getEvent_id())
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            EventVO event = dataSnapshot.getValue(EventVO.class);
+                                            if(event == null) return;
+                                            // Convert date to calendar
+                                            Calendar c = event.getEvent_from();
+
+                                            // get calendar item view
+                                            EventCalendarItemView item = getDateView(c.get(Calendar.DATE));
+
+                                            TextView eventitem = new TextView(MainActivity.this);
+                                            eventitem.setText(event.getEvent_title());
+
+                                            ViewGroup.LayoutParams layout = eventitem.getLayoutParams();
+                                            layout.width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+                                            eventitem.setLayoutParams(layout);
+
+                                            item.addView(eventitem);
+                                        }
+                                        @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+                                    });
+
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
+
+    }
+
     private void openReportView() {
         findViewById(R.id.report_view).setVisibility(View.VISIBLE);
         findViewById(R.id.schedule_view).setVisibility(View.INVISIBLE);
@@ -317,7 +441,7 @@ public class MainActivity extends AppCompatActivity
                 mDatabase.child("users").child(user.getUid()).setValue(user);
                 loadReportList();
             } else {
-
+                this.finish(); // Closes app if user not authenticated
             }
         }
     }
