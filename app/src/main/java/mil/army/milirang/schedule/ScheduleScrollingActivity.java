@@ -35,7 +35,7 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     List<String> arr;
     HashMap<String, Object> uids;
     DatabaseReference ref;
-    FirebaseUser f_user;
+    public static FirebaseUser f_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,18 +115,16 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
             }
         });
 
-
         FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
 
-                uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-
-                for(String tmp : uids.keySet())
-                {
-                    Log.d("tag", "tmp : "+tmp);
-                    ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
-                }
+                    for(String tmp : uids.keySet())
+                    {
+                        Log.d("tag", "tmp : "+tmp);
+                        ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
+                    }
             }
 
             @Override

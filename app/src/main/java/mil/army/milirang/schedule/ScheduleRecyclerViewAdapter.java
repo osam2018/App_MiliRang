@@ -31,7 +31,7 @@ import mil.army.milirang.user.vo.UserVO;
 public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRecyclerViewAdapter.ViewHolder> {
 
     private Activity activity;
-    private List<String> mdays;
+    private List<String> mdays ;// 내 계정에 할당된 당직날짜들
     private List<String> selected;
     private HashMap<String, Object> uids; //받은 이름들;
     private int num;
@@ -125,9 +125,34 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    Toast.makeText(activity, "remove " +
-                            mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                    removeItemView(getAdapterPosition());
+                    final String removeday = title.getText().toString();
+
+                    if(mdays.indexOf(removeday) != -1)
+                    {
+                        FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                List<String> removearray =  (ArrayList<String>) dataSnapshot.getValue();
+                                if(removearray != null && removearray.contains(removeday)) {
+                                    removearray.remove(removeday);
+                                    dataSnapshot.getRef().setValue(removearray);
+                                    notifyDataSetChanged();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        Toast.makeText(activity, "remove " + title.getText().toString() + " from your workdays", Toast.LENGTH_SHORT).show();
+                        notifyDataSetChanged();
+                    }
+                    //irebaseDatabase.getInstance().getReference().child("pending").setValue();
+
+                    //Toast.makeText(activity, "remove " +
+                    //        mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    //removeItemView(getAdapterPosition());
                     return false;
                 }
             });
