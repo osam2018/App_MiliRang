@@ -28,20 +28,17 @@ import mil.army.milirang.R;
 import mil.army.milirang.report.vo.ReportVO;
 import mil.army.milirang.user.vo.UserVO;
 
+import static mil.army.milirang.schedule.ValuesFromFirebase.*;
+
 public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRecyclerViewAdapter.ViewHolder> {
 
     private Activity activity;
     private List<String> mdays ;// 내 계정에 할당된 당직날짜들
-    private List<String> selected;
-    private HashMap<String, Object> uids; //받은 이름들;
     String removeday;
 
-
-    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays, List<String> selected, HashMap<String, Object> uids) {
+    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays) {
         this.activity = activity;
-        this.mdays = mdays;
-        this.selected = selected;
-        this.uids = uids;
+        this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());//mdays;
     }
 
     @NonNull
@@ -57,19 +54,20 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
     @Override
     public void onBindViewHolder(@NonNull final ScheduleRecyclerViewAdapter.ViewHolder viewHolder, int i) {
-        String data = mdays.get(i);
+        String data = schedules.get(i);
         viewHolder.title.setText(data);
+        ArrayList<String> tmp_mday = (ArrayList<String>) workdays.get(f_user.getUid());
 
-        if(selected.contains(mdays.get(i))) {
+        if(tmp_mday != null && tmp_mday.contains(schedules.get(i))) {
             viewHolder.name.setText("내 당직");
         }
         else {
-            for(String tmp : uids.keySet())
+            for(String tmp : workdays.keySet())
             {
-                ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
+                ArrayList<String> array_here = (ArrayList<String>) workdays.get(tmp);
                 if(array_here.contains(data))
                 {
-                    String name_temp = ScheduleActivity.findNameInList(tmp, ScheduleActivity.refuids);
+                    String name_temp = ScheduleActivity.findNameInList(tmp, refuids);
                     if(name_temp == null)
                     {
                         name_temp = "No name in user DB";
@@ -84,7 +82,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
     @Override
     public int getItemCount() {
-        return mdays.size();
+        return schedules.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder
@@ -100,7 +98,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(activity, "click "+mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "click "+schedules.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -108,22 +106,32 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 @Override
                 public boolean onLongClick(View view) {
                     removeday = title.getText().toString();
-                    HashMap<String, Object> removemap = (HashMap<String, Object>) ScheduleActivity.workdays.clone();
+                    //HashMap<String, Object> removemap = (HashMap<String, Object>) workdays;
 
                     if (mdays.indexOf(removeday) != -1) {
-                        List<String> removearray = (ArrayList<String>) removemap.get(ScheduleScrollingActivity.f_user.getUid());
+                        List<String> removearray = (ArrayList<String>) workdays.get(f_user.getUid());
                         if (removearray != null && removearray.contains(removeday)) {
                             removearray.remove(removeday);
-                            FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).getRef().setValue(removearray);
+                            FirebaseDatabase.getInstance().getReference().child("workdays").child(f_user.getUid()).getRef().setValue(removearray);
                             Toast.makeText(activity, "remove " + removeday + " from your workdays", Toast.LENGTH_SHORT).show();
-                            notifyDataSetChanged();
                         }
                     }
+                    ScheduleScrollingActivity.adapter.notifyDataSetChanged();
                     return false;
                 }
             });
         }
     }
+
+    public ArrayList<String> AlwaysNotNullArrayListFromWorkdays()
+    {
+        if(workdays.get(f_user.getUid()) != null)
+            return (ArrayList<String>) workdays.get(f_user.getUid());
+        else
+            return new ArrayList<String>();
+
+    }
+
 
     private void removeItemView(int position) {
         mdays.remove(position);

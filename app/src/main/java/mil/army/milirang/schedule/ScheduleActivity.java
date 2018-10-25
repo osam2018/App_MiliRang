@@ -31,6 +31,8 @@ import mil.army.milirang.R;
 import mil.army.milirang.schedule.vo.ScheduleVO;
 import mil.army.milirang.user.vo.UserVO;
 
+import static mil.army.milirang.schedule.ValuesFromFirebase.*;
+
 public class ScheduleActivity extends AppCompatActivity {
     TextView t;
     Button b;
@@ -40,8 +42,11 @@ public class ScheduleActivity extends AppCompatActivity {
     ScheduleVO vo;
     DatabaseReference ref;
     FirebaseUser f_user;
+    /*
     public static HashMap<String, Object> workdays;
     public static List<UserVO> refuids;
+    public static HashMap<String, Object> uids;
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +59,9 @@ public class ScheduleActivity extends AppCompatActivity {
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
-        workdays = new HashMap<String, Object>();
-        refuids = new ArrayList<UserVO>();
-
-        List<String> name = new ArrayList<String>();
-        name.add(f_user.getDisplayName());
-
-        ref.getDatabase().getReference().child("uids").getDatabase().getReference().child(f_user.getUid()).setValue(name);
 
         // 자료 접근 static 변수에 값을 갱신해줌
+        /*
         FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -89,7 +88,25 @@ public class ScheduleActivity extends AppCompatActivity {
 
                     }
                 });
-        /*
+        FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+
+                for(String tmp : uids.keySet())
+                {
+                    Log.d("tag", "tmp : "+tmp);
+                    ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         ArrayList<Date> info = new ArrayList<Date>();
 
         String day1 = "2018-10-25";
@@ -114,8 +131,30 @@ public class ScheduleActivity extends AppCompatActivity {
         List<Date> nodays = new ArrayList<Date>();
         nodays.add(Calendar.getInstance().getTime());
 
+        calendar.setDateSelectableFilter(new CalendarPickerView.DateSelectableFilter() {
+            @Override
+            public boolean isDateSelectable(Date date) {
+                String selected = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                for(String tmp : workdays.keySet())
+                {
+                    ArrayList<String> array_here = (ArrayList<String>) workdays.get(tmp);
+                    if(array_here.contains(selected))
+                    {
+                        String name_found = ScheduleActivity.findNameInList(tmp, refuids);
+                        if(name_found == null)
+                        {
+                            return false;
+                        }
+                        else
+                            return true;
+                    }
+                }
+                return true;
+            }
+        });
+
         CalendarCellDecorator deco = new CalDeco(calendar, nodays);
-        final List<CalendarCellDecorator> decorators = new ArrayList<CalendarCellDecorator>();
+        List<CalendarCellDecorator> decorators = new ArrayList<CalendarCellDecorator>();
         decorators.add(deco);
         calendar.setDecorators(decorators);
 
@@ -132,6 +171,9 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 ////////////////////Calendar End/////////////////////////////////////////
+
+
+
 ////////////////Button Setting/////////////////////////
 
         b.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +185,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     days.add(day);
                     Toast.makeText(ScheduleActivity.this, day, Toast.LENGTH_SHORT).show();
-                ref.child(f_user.getUid()).setValue(days); // 버튼을 누르면 선택한 날짜를 넘겨줌
+                    ref.child(f_user.getUid()).setValue(days); // 버튼을 누르면 선택한 날짜를 넘겨줌
                 }
             }
         });

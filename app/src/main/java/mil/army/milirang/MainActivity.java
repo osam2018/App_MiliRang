@@ -116,13 +116,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         showLogin();
-
     }
 
     private void showLogin() {
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
