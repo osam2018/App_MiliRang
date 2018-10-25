@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import mil.army.milirang.R;
@@ -43,7 +44,7 @@ public class EventDetailActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-        EventVO event = (EventVO) this.getIntent().getExtras().get("report");
+        EventVO event = (EventVO) this.getIntent().getExtras().get("event");
 
         TextView titleview = findViewById(R.id.report_detail_title);
         TextView bodyview = findViewById(R.id.report_detail_body);
@@ -54,20 +55,38 @@ public class EventDetailActivity extends AppCompatActivity {
         bodyview.setText(event.getEvent_detail());
         senderview.setText(event.getEvent_owner());
 
-        mDatabase.child("users")
-                .child(event.getEvent_owner())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        UserVO user = dataSnapshot.getValue(UserVO.class);
-                        senderview.setText(user.getDisplayName());
-                    }
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        from.setTimeInMillis(event.getEvent_from());
+        to.setTimeInMillis(event.getEvent_to());
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+        String dateText = "";
+        dateText += from.get(Calendar.YEAR) + "/";
+        dateText += from.get(Calendar.MONTH) + "/";
+        dateText += from.get(Calendar.DAY_OF_MONTH) + " - ";
 
-                    }
-                });
+        dateText += to.get(Calendar.YEAR) + "/";
+        dateText += to.get(Calendar.MONTH) + "/";
+        dateText += to.get(Calendar.DAY_OF_MONTH);
+
+        timestampviewview.setText(dateText);
+
+        if(event.getEvent_owner() != null) {
+            mDatabase.child("users")
+                    .child(event.getEvent_owner())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            UserVO user = dataSnapshot.getValue(UserVO.class);
+                            senderview.setText(user.getDisplayName());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
 
         mReceiverRecyclerView = findViewById(R.id.report_detail_receivers);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

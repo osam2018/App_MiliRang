@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">MiliRang</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_open9">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
@@ -98,5 +98,72 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+
+    <!-- firebase authui -->
+
+    <!-- Common -->
+    <string name="fui_default_toolbar_title" translatable="false">@string/app_name</string>
+    <string name="fui_progress_dialog_loading" translation_description="Loading text in dialog">Loading…</string>
+    <string name="fui_sign_in_default" translation_description="Button text to sign in">로그인</string>
+    <string name="fui_tos_and_pp" translation_description="Global ToS and privacy policy message">By continuing, you are indicating that you accept our <xliff:g example="https://google.com/terms" id="tos" translation_description="Terms of service text">%1$s</xliff:g> and <xliff:g example="https://google.com/privacy" id="pp" translation_description="Privacy policy text">%2$s</xliff:g>.</string>
+    <string name="fui_tos_and_pp_footer" translation_description="Global ToS and Privacy policy footer"><xliff:g example="https://google.com/terms" id="tos" translation_description="Footer ToS text">%1$s</xliff:g> \u00A0 \u00A0 <xliff:g example="https://google.com/privacy" id="pp" translation_description="Footer privacy policy text">%2$s</xliff:g></string>
+
+    <!-- Provider -->
+    <string name="fui_idp_name_google">Google</string>
+    <string name="fui_idp_name_facebook">Facebook</string>
+    <string name="fui_idp_name_twitter">Twitter</string>
+    <string name="fui_idp_name_github">GitHub</string>
+
+    <string name="fui_sign_in_with_email" translation_description="Sign in button text">Email을 사용하여 로그인</string>
+
+    <!-- Email common-->
+    <string name="fui_next_default" translation_description="Button text to continue">다음</string>
+    <string name="fui_email_hint" translation_description="Hint in email input field">Email</string>
+    <string name="fui_phone_hint" translation_description="Hint for phone input field">전화번호</string>
+    <string name="fui_password_hint" translation_description="Hint for password input field">비밀번호</string>
+    <string name="fui_required_field" translation_description="Inline error for required field">이 필드는 공백이 될 수 없습니다.</string>
+    <string name="fui_invalid_email_address" translation_description="Inline error for invalid email address">이메일 형식이 올바르지 않습니다.</string>
+    <string name="fui_missing_email_address" translation_description="Inline error for empty email address in input field">이메일 주소를 입력하십시오.</string>
+    <string name="fui_progress_dialog_checking_accounts" translation_description="Progress dialog text while checking for existing accounts">계정을 확인중입니다…….</string>
+
+    <!-- Email sign up -->
+    <string name="fui_title_register_email" translation_description="Title for signup form">회원가입</string>
+    <string name="fui_name_hint" translation_description="Hint for last name input field">성명</string>
+    <string name="fui_button_text_save" translation_description="Button text to save input form">저장</string>
+    <string name="fui_progress_dialog_signing_up" translation_description="Dialog text while waiting for server's signup response">유저 생성중…….</string>
+    <plurals name="fui_error_weak_password" translation_description="Inline error for weak password">
+        <item quantity="one" translation_description="Inline error for weak password">비밀번호가 강력하지 않습니다. %1$d자 이상의 숫자와 영문자로 작성하십시오.</item>
+        <item quantity="other" translation_description="Inline error for weak password">비밀번호가 강력하지 않습니다. %1$d자 이상의 숫자와 영문자로 작성하십시오.</item>
+    </plurals>
+    <string name="fui_email_account_creation_error" translation_description="Inline error for signup failure">이메일 회원가입에 실패하였습니다.</string>
+    <string name="fui_terms_of_service" translation_description="Link text to web url containing the app's terms of service">Terms of Service</string>
+    <string name="fui_privacy_policy" translation_description="Link text to web url containing the app's privacy policy">Privacy Policy</string>
+    <string name="fui_email_field_name" translatable="false">email_field</string>
+
+    <!-- Idp/Email welcome back -->
+    <string name="fui_title_welcome_back_idp_prompt" translatable="false">@string/fui_sign_in_default</string>
+    <string name="fui_title_welcome_back_password_prompt" translatable="false">@string/fui_sign_in_default</string>
+    <string name="fui_welcome_back_idp_header" translation_description="Inline subtitle to users whose signup was interrupted since an existing account was detected">이미 계정이 존재합니다.</string>
+    <string name="fui_welcome_back_email_header" translation_description="Message for returning users">Welcome back!</string>
+    <string name="fui_welcome_back_idp_prompt" translation_description="Message to users that need to signin using existing IDP accounts">
+        You\'ve already used <xliff:g example="jane.doe@example.com" id="email_addr" translation_description="">%1$s</xliff:g>.
+        Sign in with <xliff:g example="Google" id="provider_name" translation_description="">%2$s</xliff:g> to continue.
+    </string>
+    <string name="fui_welcome_back_password_prompt_body" translation_description="Message to users that need to signin using existing email accounts">
+        You\'ve already used <xliff:g example="jane.doe@example.com" id="email_addr" translation_description="">%1$s</xliff:g>
+        to sign in. Enter your password for that account.
+    </string>
+    <string name="fui_progress_dialog_signing_in" translation_description="Progress dialog text">로그인중…….</string>
+    <string name="fui_trouble_signing_in" translation_description="Link leading to forgot password flow">비밀번호 찾기</string>
+
+    <!-- Password recovery -->
+    <string name="fui_title_recover_password_activity" translation_description="Recover password screen title">비밀번호 찾기</string>
+    <string name="fui_title_confirm_recover_password" translation_description="Password recovery confirmation message">이메일을 확인하세요.</string>
+    <string name="fui_password_recovery_body" translation_description="Password recovery message body">이 이메일로 비밀번호 찾기 방법이 전송됩니다.</string>
+    <string name="fui_button_text_send" translation_description="Button text to send recovery email">전송</string>
+    <string name="fui_confirm_recovery_body" translation_description="Alert dialog displayed after password recovery email is sent">%1$s로 전송된 절차에 따라 진행하십시오.</string>
+    <string name="fui_progress_dialog_sending" translation_description="Progress dialog while password recovery email is being sent">이메일 발송중…….</string>
+    <string name="fui_error_email_does_not_exist" translation_description="Inline error when user attempt signin with invalid account">존재하지 않는 이메일 주소입니다.</string>
+
 
 </resources>

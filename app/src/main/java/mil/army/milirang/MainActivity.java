@@ -2,6 +2,7 @@ package mil.army.milirang;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,7 +60,6 @@ import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
-import mil.army.milirang.schedule.ValuesFromFirebase;
 import mil.army.milirang.user.ContactRecyclerViewAdapter;
 import mil.army.milirang.user.vo.UserVO;
 
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        ValuesFromFirebase base = new ValuesFromFirebase(); //데이터베이스에서 필요한 정보들을 static으로 띄워줌
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +116,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        showLogin();
+    }
+
+    private void showLogin() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build()
         );
@@ -138,7 +143,6 @@ public class MainActivity extends AppCompatActivity
             ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_name)).setText(user.getDisplayName());
             loadReportList();
         }
-
     }
 
     private void prepareReportView() {
@@ -320,7 +324,7 @@ public class MainActivity extends AppCompatActivity
         Calendar cal = (Calendar) Calendar.getInstance().clone();
         cal.set(event_year, event_month, 1);
 
-        int first_day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+        int first_day_of_week = cal.get(Calendar.DAY_OF_WEEK) - 1;
 
         rowindex = (first_day_of_week + date) / 7;
         colindex = (first_day_of_week + date) % 7;
@@ -328,7 +332,29 @@ public class MainActivity extends AppCompatActivity
         TableRow firstRow = (TableRow) calendar_table.getChildAt(rowindex);
 
         EventCalendarItemView item = (EventCalendarItemView) firstRow.getChildAt(colindex);
+
+        if(colindex == 0) {
+            TextView tv = item.findViewById(R.id.event_calendar_item_date);
+            tv.setTextColor(Color.RED);
+        }
+        if(colindex == 6) {
+            TextView tv = item.findViewById(R.id.event_calendar_item_date);
+            tv.setTextColor(Color.BLUE);
+        }
+
         return item;
+    }
+
+    private void clearCalendarDates() {
+        TableLayout cal = findViewById(R.id.event_calendar);
+        for(int i = 0 ; i < 6 ; i++) {
+            TableRow row = (TableRow) cal.getChildAt(i);
+            for(int j = 0 ; j < 7 ; j++) {
+                View item = row.getChildAt(j);
+                TextView label = item.findViewById(R.id.event_calendar_item_date);
+                label.setText("");
+            }
+        }
     }
 
     /**
@@ -336,12 +362,16 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadCalendar() {
 
+        clearCalendarDates();
+
         // prepare month labels
         TextView month_label = findViewById(R.id.event_month_label);
+        TextView year_label = findViewById(R.id.event_year_label);
         Button next_button = findViewById(R.id.event_next_month_btn);
         Button prev_button = findViewById(R.id.event_prev_month_btn);
-        int current_month = event_month + 1;
+        final int current_month = event_month + 1;
 
+        year_label.setText(event_year + "");
         month_label.setText(current_month + "월");
         if(current_month == 12)
             next_button.setText(1 + "월");
@@ -353,8 +383,35 @@ public class MainActivity extends AppCompatActivity
         else
             prev_button.setText((current_month - 1) + "월");
 
+        next_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(event_month == 11) {
+                    event_month = 0;
+                    event_year += 1;
+                } else {
+                    event_month += 1;
+                }
+                loadCalendar();
+            }
+        });
+
+        prev_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(event_month == 0) {
+                    event_month = 11;
+                    event_year -= 1;
+                } else {
+                    event_month -= 1;
+                }
+                loadCalendar();
+            }
+        });
+
         // prepare calendar dates
         Calendar cal = (Calendar) Calendar.getInstance().clone();
+        cal.set(event_year,event_month,1);
 
         // display calendar dates
         for(int i = 0 ; i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i++) {
@@ -393,30 +450,35 @@ public class MainActivity extends AppCompatActivity
                                             Calendar c = Calendar.getInstance();
                                             c.setTimeInMillis(event.getEvent_from());
 
-                                            // get calendar item view
-                                            EventCalendarItemView item = getDateView(c.get(Calendar.DATE));
+                                            Calendar till = Calendar.getInstance();
+                                            till.setTimeInMillis(event.getEvent_to());
 
-                                            TextView eventitem = new TextView(MainActivity.this);
-                                            eventitem.setText(event.getEvent_title());
+                                            for(int day = c.get(Calendar.DATE) ; day <= till.get(Calendar.DATE) ; day++) {
+                                                // get calendar item view
+                                                EventCalendarItemView item = getDateView(day);
 
-                                            ViewGroup.LayoutParams layout = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                                                TextView eventitem = new TextView(MainActivity.this);
+                                                eventitem.setText(event.getEvent_title());
 
-                                            eventitem.setLayoutParams(layout);
-                                            eventitem.setTextSize(10);
-                                            eventitem.setSingleLine(true);
+                                                ViewGroup.LayoutParams layout = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                                            eventitem.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    Intent intent = new Intent(MainActivity.this, EventDetailActivity.class);
-                                                    event.setEvent_id(dataSnapshot.getKey());
-                                                    intent.putExtra("event", event);
-                                                    startActivity(intent);
-                                                }
-                                            });
+                                                eventitem.setLayoutParams(layout);
+                                                eventitem.setTextSize(10);
+                                                eventitem.setSingleLine(true);
 
-                                            LinearLayout linear = item.findViewById(R.id.event_calendar_event_list);
-                                            linear.addView(eventitem);
+                                                eventitem.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Intent intent = new Intent(MainActivity.this, EventDetailActivity.class);
+                                                        event.setEvent_id(dataSnapshot.getKey());
+                                                        intent.putExtra("event", event);
+                                                        startActivity(intent);
+                                                    }
+                                                });
+
+                                                LinearLayout linear = item.findViewById(R.id.event_calendar_event_list);
+                                                linear.addView(eventitem);
+                                            }
                                         }
                                         @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
                                     });
@@ -535,6 +597,9 @@ public class MainActivity extends AppCompatActivity
             if(!contactViewPrepared) prepareContactView();
             openContactView();
             loadContactList();
+        } else if(id == R.id.nav_etc_logout) {
+            FirebaseAuth.getInstance().signOut();
+            showLogin();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
