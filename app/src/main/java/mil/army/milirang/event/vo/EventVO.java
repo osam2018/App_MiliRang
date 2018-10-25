@@ -10,6 +10,7 @@ public class EventVO implements Serializable {
     private String event_title;
     private long event_from;
     private long event_to;
+    private String event_owner;
     private String event_detail;
     private String event_location;
 
@@ -59,5 +60,13 @@ public class EventVO implements Serializable {
 
     public void setEvent_location(String event_location) {
         this.event_location = event_location;
+    }
+
+    public String getEvent_owner() {
+        return event_owner;
+    }
+
+    public void setEvent_owner(String event_owner) {
+        this.event_owner = event_owner;
     }
 }

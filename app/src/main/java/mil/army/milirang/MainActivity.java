@@ -51,6 +51,7 @@ import java.util.List;
 
 import mil.army.milirang.event.EventCalendarItemView;
 import mil.army.milirang.event.EventCreateActivity;
+import mil.army.milirang.event.EventDetailActivity;
 import mil.army.milirang.event.vo.EventReceiverVO;
 import mil.army.milirang.event.vo.EventVO;
 import mil.army.milirang.report.ReportCreateActivity;
@@ -386,8 +387,8 @@ public class MainActivity extends AppCompatActivity
                                     .child(eventReceiverVO.getEvent_id())
                                     .addValueEventListener(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            EventVO event = dataSnapshot.getValue(EventVO.class);
+                                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                            final EventVO event = dataSnapshot.getValue(EventVO.class);
                                             if(event == null) return;
                                             // Convert date to calendar
                                             Calendar c = Calendar.getInstance();
@@ -404,6 +405,16 @@ public class MainActivity extends AppCompatActivity
                                             eventitem.setLayoutParams(layout);
                                             eventitem.setTextSize(10);
                                             eventitem.setSingleLine(true);
+
+                                            eventitem.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent(MainActivity.this, EventDetailActivity.class);
+                                                    event.setEvent_id(dataSnapshot.getKey());
+                                                    intent.putExtra("event", event);
+                                                    startActivity(intent);
+                                                }
+                                            });
 
                                             LinearLayout linear = item.findViewById(R.id.event_calendar_event_list);
                                             linear.addView(eventitem);

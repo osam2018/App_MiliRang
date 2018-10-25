@@ -1,4 +1,4 @@
-package mil.army.milirang.report;
+package mil.army.milirang.event;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mil.army.milirang.R;
+import mil.army.milirang.event.vo.EventReceiverVO;
+import mil.army.milirang.event.vo.EventVO;
+import mil.army.milirang.report.ReceiverRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.report.vo.ReportVO;
 import mil.army.milirang.user.vo.UserVO;
 
-public class ReportDetailActivity extends AppCompatActivity {
+public class EventDetailActivity extends AppCompatActivity {
 
     DatabaseReference mDatabase;
     RecyclerView mReceiverRecyclerView;
@@ -40,38 +43,19 @@ public class ReportDetailActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-        ReportVO report = (ReportVO) this.getIntent().getExtras().get("report");
+        EventVO event = (EventVO) this.getIntent().getExtras().get("report");
 
         TextView titleview = findViewById(R.id.report_detail_title);
         TextView bodyview = findViewById(R.id.report_detail_body);
         final TextView senderview = findViewById(R.id.report_detail_sender);
         TextView timestampviewview = findViewById(R.id.report_detail_timestamp);
 
-        titleview.setText(report.getRpt_title());
-        bodyview.setText(report.getRpt_body());
-        senderview.setText(report.getRpt_sender());
-        timestampviewview.setText(report.getRpt_timestamp());
-
-        mDatabase.child("report_receiver")
-                .orderByChild("report_id")
-                .equalTo(report.getRpt_id())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                            ReportReceiverVO rvo = singleSnapshot.getValue(ReportReceiverVO.class);
-                            if(rvo.getReceiver_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                String key = singleSnapshot.getKey();
-                                mDatabase.child("report_receiver").child(key).child("received").setValue(true);
-                                break;
-                            }
-                        }
-                    }
-                    @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
-                });
+        titleview.setText(event.getEvent_title());
+        bodyview.setText(event.getEvent_detail());
+        senderview.setText(event.getEvent_owner());
 
         mDatabase.child("users")
-                .child(report.getRpt_sender())
+                .child(event.getEvent_owner())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -99,16 +83,16 @@ public class ReportDetailActivity extends AppCompatActivity {
         mReceiverRecyclerView.addItemDecoration(dividerItemDecoration);
 
 
-        mDatabase.child("report_receiver")
-                .orderByChild("report_id")
-                .equalTo(report.getRpt_id())
+        mDatabase.child("event_receiver")
+                .orderByChild("event_id")
+                .equalTo(event.getEvent_id())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         mReceiverList.clear();
                         mReceiverRecyclerViewAdapter.notifyDataSetChanged();
                         for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                            String uid = singleSnapshot.getValue(ReportReceiverVO.class).getReceiver_id();
+                            String uid = singleSnapshot.getValue(EventReceiverVO.class).getReceiver_id();
                             mDatabase.child("users")
                                     .child(uid)
                                     .addValueEventListener(new ValueEventListener() {
