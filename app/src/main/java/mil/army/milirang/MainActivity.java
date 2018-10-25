@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     List<UserVO> mContactList;
 
     boolean reportViewPrepared = false;
-    boolean scheduleViewPrepared = false;
+    boolean eventViewPrepared = false;
     boolean contactViewPrepared = false;
 
 
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         reportViewPrepared = true;
     }
 
-    private void prepareScheduleView() {
+    private void prepareEventView() {
         Toolbar schedule_toolbar = (Toolbar) findViewById(R.id.schedule_toolbar);
         setSupportActionBar(schedule_toolbar);
 
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, schedule_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(schedule_toggle);
         schedule_toggle.syncState();
-        scheduleViewPrepared = true;
+        eventViewPrepared = true;
     }
     private void prepareContactView() {
 
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.contact_view).setVisibility(View.INVISIBLE);
     }
 
-    private void openScheduleView() {
+    private void openEventView() {
         findViewById(R.id.report_view).setVisibility(View.INVISIBLE);
         findViewById(R.id.schedule_view).setVisibility(View.VISIBLE);
         findViewById(R.id.contact_view).setVisibility(View.INVISIBLE);
@@ -372,8 +372,8 @@ public class MainActivity extends AppCompatActivity
             loadSentReportList();
         } else if (id == R.id.nav_schedule_event) {
             this.setTitle("이벤트");
-            if(!scheduleViewPrepared) prepareScheduleView();
-            openScheduleView();
+            if(!eventViewPrepared) prepareEventView();
+            openEventView();
         } else if (id == R.id.nav_schedule_work) {
             Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
             MainActivity.this.startActivity(intent);

@@ -16,7 +16,7 @@
 
     <include
         android:id="@+id/schedule_view"
-        layout="@layout/app_bar_schedule"
+        layout="@layout/app_bar_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible" />
