@@ -62,6 +62,33 @@ public class ScheduleActivity extends AppCompatActivity {
 
         ref.getDatabase().getReference().child("uids").getDatabase().getReference().child(f_user.getUid()).setValue(name);
 
+        // 자료 접근 static 변수에 값을 갱신해줌
+        FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference().child("users").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot single : dataSnapshot.getChildren()) {
+                            UserVO tmp = single.getValue(UserVO.class);
+                            refuids.add(tmp);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
         /*
         ArrayList<Date> info = new ArrayList<Date>();
 
@@ -75,11 +102,10 @@ public class ScheduleActivity extends AppCompatActivity {
         {
             Log.d("Wrong Format", "Wrong Format!");
         }
-*/
+*///////////////Calender Setting////////////////////////
         Calendar firstday = Calendar.getInstance();
-        firstday.set(Calendar.DAY_OF_MONTH, 1);
+        //firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
-        lastday.set(Calendar.DAY_OF_MONTH, 1);
         lastday.add(Calendar.MONTH, 1);
 
         Date today = new Date();
@@ -105,35 +131,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
             }
         });
-
-        FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        FirebaseDatabase.getInstance().getReference().child("users")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot single : dataSnapshot.getChildren()) {
-                            UserVO tmp = single.getValue(UserVO.class);
-                            refuids.add(tmp);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
+////////////////////Calendar End/////////////////////////////////////////
+////////////////Button Setting/////////////////////////
 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +170,7 @@ public class ScheduleActivity extends AppCompatActivity {
                         ArrayList<String> array_herdays = (ArrayList<String>) workdays.get(tmp);
                         if(array_herdays.contains(day) && !f_user.getUid().equals(tmp))
                         {
-                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+ScheduleRecyclerViewAdapter.findNameInList(tmp, refuids)+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+findNameInList(tmp, refuids)+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
                             days.clear();
                             return;
                         }
@@ -187,7 +186,15 @@ public class ScheduleActivity extends AppCompatActivity {
         t.setText(String.valueOf(calendar.getSelectedDates().size()));
 //        CalendarCellDecorator deco = new CalendarCellDecorator();
   //      calendar.getDecorators().add(deco);
-
-
+    }
+    public static String findNameInList(String uid, List<UserVO> arr){
+        for(UserVO a : arr)
+        {
+            if(a.getUid().equals(uid))
+            {
+                return a.getDisplayName();
+            }
+        }
+        return null;
     }
 }

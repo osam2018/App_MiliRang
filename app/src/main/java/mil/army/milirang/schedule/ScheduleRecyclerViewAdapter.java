@@ -69,7 +69,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
                 if(array_here.contains(data))
                 {
-                    String name_temp = findNameInList(tmp, ScheduleActivity.refuids);
+                    String name_temp = ScheduleActivity.findNameInList(tmp, ScheduleActivity.refuids);
                     if(name_temp == null)
                     {
                         name_temp = "No name in user DB";
@@ -129,16 +129,5 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
         mdays.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mdays.size()); // 지워진 만큼 다시 채워넣기.
-    }
-
-    public static String findNameInList(String uid, List<UserVO> arr){
-        for(UserVO a : arr)
-        {
-            if(a.getUid().equals(uid))
-            {
-                return a.getDisplayName();
-            }
-        }
-        return null;
     }
 }
