@@ -32,9 +32,7 @@ public class UserVO implements Serializable {
         this.displayName = displayName;
     }
 
-    public String getUid() {
-        return uid;
-    }
+    public String getUid() {       return uid;    }
 
     public void setUid(String uid) {
         this.uid = uid;

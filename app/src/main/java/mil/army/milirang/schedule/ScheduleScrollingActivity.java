@@ -33,8 +33,9 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     ScheduleRecyclerViewAdapter adapter;
     List<String> list;
     List<String> arr;
+    HashMap<String, Object> uids;
     DatabaseReference ref;
-    FirebaseUser f_user;
+    public static FirebaseUser f_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,8 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         list = new ArrayList<String>();
         arr = new ArrayList<String>();
+        uids = new HashMap<String, Object>();
+
         // Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
 
         recyclerview.setHasFixedSize(true);
@@ -53,11 +56,12 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         layoutmanager = new LinearLayoutManager(this);
         recyclerview.setLayoutManager(layoutmanager);
 
-        adapter = new ScheduleRecyclerViewAdapter(this, list, arr);
+        adapter = new ScheduleRecyclerViewAdapter(this, list, arr, uids);
         recyclerview.setAdapter(adapter);
 
         loadScheduleList();
         loadSchedulePersonList();
+
     }
 
 
@@ -89,9 +93,9 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     }
 
     private void loadSchedulePersonList() {
-        Query messages = FirebaseDatabase.getInstance().getReference().child("messeges").orderByKey().equalTo(f_user.getUid());
+        Query workdays = FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().equalTo(f_user.getUid());
 
-        messages.addValueEventListener(new ValueEventListener() {
+        workdays.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 arr.clear();
@@ -108,6 +112,24 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d("TAG", "ERROR!");
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+
+                    for(String tmp : uids.keySet())
+                    {
+                        Log.d("tag", "tmp : "+tmp);
+                        ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
+                    }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

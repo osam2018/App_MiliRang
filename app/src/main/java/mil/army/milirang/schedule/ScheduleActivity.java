@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import mil.army.milirang.R;
@@ -38,6 +39,9 @@ public class ScheduleActivity extends AppCompatActivity {
     ScheduleVO vo;
     DatabaseReference ref;
     FirebaseUser f_user;
+    HashMap<String, Object> workdays;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,14 @@ public class ScheduleActivity extends AppCompatActivity {
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
+        workdays = new HashMap<String, Object>();
 
+        List<String> name = new ArrayList<String>();
+        name.add(f_user.getDisplayName());
+
+        ref.getDatabase().getReference().child("uids").getDatabase().getReference().child(f_user.getUid()).setValue(name);
+
+        /*
         ArrayList<Date> info = new ArrayList<Date>();
 
         String day1 = "2018-10-25";
@@ -63,7 +74,7 @@ public class ScheduleActivity extends AppCompatActivity {
         {
             Log.d("Wrong Format", "Wrong Format!");
         }
-
+*/
         Calendar firstday = Calendar.getInstance();
         firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
@@ -121,13 +132,36 @@ public class ScheduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List daylist = calendar.getSelectedDates();
                 List<String> days = new ArrayList<String>();
+
+                FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
+                    //if there is already value that matches with day
+                    for(String tmp : workdays.keySet())
+                    {
+                        ArrayList<String> array_herdays = (ArrayList<String>) workdays.get(tmp);
+                        if(array_herdays.contains(day) && !f_user.getUid().equals(tmp))
+                        {
+                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+f_user.getDisplayName()+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
+                            days.clear();
+                            return;
+                        }
+                    }
                     days.add(day);
                 }
                 Toast.makeText(ScheduleActivity.this, "내 당직으로 설정완료", Toast.LENGTH_SHORT).show();
-                FirebaseDatabase.getInstance().getReference("messeges").child(f_user.getUid()).setValue(days);
-
+                FirebaseDatabase.getInstance().getReference("workdays").child(f_user.getUid()).setValue(days);
             }
         });
 
