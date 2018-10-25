@@ -34,40 +34,21 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     private List<String> mdays ;// 내 계정에 할당된 당직날짜들
     private List<String> selected;
     private HashMap<String, Object> uids; //받은 이름들;
-    private int num;
-    private List<UserVO> refuids;
     String removeday;
-    boolean pressed;
+
 
     public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays, List<String> selected, HashMap<String, Object> uids) {
         this.activity = activity;
         this.mdays = mdays;
         this.selected = selected;
         this.uids = uids;
-        this.refuids = new ArrayList<UserVO>();
-
-        FirebaseDatabase.getInstance().getReference().child("users")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot single : dataSnapshot.getChildren()) {
-                            UserVO tmp = single.getValue(UserVO.class);
-                            refuids.add(tmp);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
     }
 
     @NonNull
     @Override
     public ScheduleRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.schedule_item, viewGroup, false); // report_item => act...sche...
+                .inflate(R.layout.schedule_item, viewGroup, false);
 
         ViewHolder viewHolder = new ViewHolder(view);
 
@@ -88,7 +69,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
                 if(array_here.contains(data))
                 {
-                    String name_temp = findNameInList(tmp, refuids);
+                    String name_temp = findNameInList(tmp, ScheduleActivity.refuids);
                     if(name_temp == null)
                     {
                         name_temp = "No name in user DB";
@@ -106,7 +87,8 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
         return mdays.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder
+    {
         TextView title;
         TextView name;
 
@@ -118,8 +100,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(activity, "click " +
-                            mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "click "+mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -134,39 +115,15 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                         if (removearray != null && removearray.contains(removeday)) {
                             removearray.remove(removeday);
                             FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).getRef().setValue(removearray);
+                            Toast.makeText(activity, "remove " + removeday + " from your workdays", Toast.LENGTH_SHORT).show();
                             notifyDataSetChanged();
                         }
                     }
                     return false;
                 }
-/*
-                        FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                List<String> removearray =  (ArrayList<String>) dataSnapshot.getValue();
-                                if(removearray != null && removearray.contains(removeday)) {
-                                    removearray.remove(removeday);
-                                    dataSnapshot.getRef().setValue(removearray);
-                                    notifyDataSetChanged();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                            return false;
-                            */
-
-                        });
-                        Toast.makeText(activity, "remove " + title.getText().toString() + " from your workdays", Toast.LENGTH_SHORT).show();
-                    }
-                    //irebaseDatabase.getInstance().getReference().child("pending").setValue();
-
-                    //Toast.makeText(activity, "remove " +
-                    //        mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                    //removeItemView(getAdapterPosition());
+            });
         }
+    }
 
     private void removeItemView(int position) {
         mdays.remove(position);
@@ -174,7 +131,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
         notifyItemRangeChanged(position, mdays.size()); // 지워진 만큼 다시 채워넣기.
     }
 
-    private String findNameInList(String uid, List<UserVO> arr){
+    public static String findNameInList(String uid, List<UserVO> arr){
         for(UserVO a : arr)
         {
             if(a.getUid().equals(uid))

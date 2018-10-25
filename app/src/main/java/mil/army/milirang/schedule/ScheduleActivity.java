@@ -29,6 +29,7 @@ import java.util.List;
 
 import mil.army.milirang.R;
 import mil.army.milirang.schedule.vo.ScheduleVO;
+import mil.army.milirang.user.vo.UserVO;
 
 public class ScheduleActivity extends AppCompatActivity {
     TextView t;
@@ -40,6 +41,7 @@ public class ScheduleActivity extends AppCompatActivity {
     DatabaseReference ref;
     FirebaseUser f_user;
     public static HashMap<String, Object> workdays;
+    public static List<UserVO> refuids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class ScheduleActivity extends AppCompatActivity {
         f_user = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("schedules");
         workdays = new HashMap<String, Object>();
+        refuids = new ArrayList<UserVO>();
 
         List<String> name = new ArrayList<String>();
         name.add(f_user.getDisplayName());
@@ -77,7 +80,7 @@ public class ScheduleActivity extends AppCompatActivity {
         firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
         lastday.set(Calendar.DAY_OF_MONTH, 1);
-        lastday.add(Calendar.DAY_OF_MONTH, 31);
+        lastday.add(Calendar.MONTH, 1);
 
         Date today = new Date();
         calendar.init(firstday.getTime(), lastday.getTime()).inMode(CalendarPickerView.SelectionMode.MULTIPLE).withHighlightedDate(today);
@@ -102,6 +105,35 @@ public class ScheduleActivity extends AppCompatActivity {
 
             }
         });
+
+        FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference().child("users")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot single : dataSnapshot.getChildren()) {
+                            UserVO tmp = single.getValue(UserVO.class);
+                            refuids.add(tmp);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,18 +163,6 @@ public class ScheduleActivity extends AppCompatActivity {
                 List daylist = calendar.getSelectedDates();
                 List<String> days = new ArrayList<String>();
 
-                FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     //if there is already value that matches with day
@@ -151,7 +171,7 @@ public class ScheduleActivity extends AppCompatActivity {
                         ArrayList<String> array_herdays = (ArrayList<String>) workdays.get(tmp);
                         if(array_herdays.contains(day) && !f_user.getUid().equals(tmp))
                         {
-                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+f_user.getDisplayName()+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+ScheduleRecyclerViewAdapter.findNameInList(tmp, refuids)+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
                             days.clear();
                             return;
                         }
