@@ -33,12 +33,12 @@ import static mil.army.milirang.schedule.ValuesFromFirebase.*;
 public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRecyclerViewAdapter.ViewHolder> {
 
     private Activity activity;
-    private List<String> mdays ;// 내 계정에 할당된 당직날짜들
+   // private List<String> mdays ;// 내 계정에 할당된 당직날짜들
     String removeday;
 
     public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity) {
         this.activity = activity;
-        this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());
+        //this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());
     }
 
     @NonNull
@@ -107,8 +107,9 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 public boolean onLongClick(View view) {
                     removeday = title.getText().toString();
                     //HashMap<String, Object> removemap = (HashMap<String, Object>) workdays;
+                    ArrayList<String> tmp_mday = (ArrayList<String>) workdays.get(f_user.getUid());
 
-                    if (mdays.indexOf(removeday) != -1) {
+                    if (tmp_mday.indexOf(removeday) != -1) {
                         List<String> removearray = (ArrayList<String>) workdays.get(f_user.getUid());
                         if (removearray != null && removearray.contains(removeday)) {
                             removearray.remove(removeday);

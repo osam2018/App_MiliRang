@@ -60,6 +60,7 @@ import mil.army.milirang.report.vo.ReportReceiverVO;
 import mil.army.milirang.schedule.ScheduleActivity;
 import mil.army.milirang.report.ReportRecyclerViewAdapter;
 import mil.army.milirang.report.vo.ReportVO;
+import mil.army.milirang.schedule.ValuesFromFirebase;
 import mil.army.milirang.user.ContactRecyclerViewAdapter;
 import mil.army.milirang.user.vo.UserVO;
 
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        ValuesFromFirebase base = new ValuesFromFirebase();
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
