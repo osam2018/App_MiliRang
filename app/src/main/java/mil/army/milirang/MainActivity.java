@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        ValuesFromFirebase base = new ValuesFromFirebase();
 
         FloatingActionButton report_fab = (FloatingActionButton) findViewById(R.id.report_fab);
         report_fab.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +143,8 @@ public class MainActivity extends AppCompatActivity
 
             ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_name)).setText(user.getDisplayName());
             loadReportList();
+
+            new ValuesFromFirebase();
         }
     }
 
@@ -533,6 +534,7 @@ public class MainActivity extends AppCompatActivity
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 mDatabase.child("users").child(user.getUid()).setValue(user);
                 loadReportList();
+                new ValuesFromFirebase();
             } else {
                 this.finish(); // Closes app if user not authenticated
             }
