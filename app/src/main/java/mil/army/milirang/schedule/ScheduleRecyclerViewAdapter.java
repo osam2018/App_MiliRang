@@ -36,6 +36,8 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     private HashMap<String, Object> uids; //받은 이름들;
     private int num;
     private List<UserVO> refuids;
+    String removeday;
+    boolean pressed;
 
     public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays, List<String> selected, HashMap<String, Object> uids) {
         this.activity = activity;
@@ -59,7 +61,6 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
                     }
                 });
-
     }
 
     @NonNull
@@ -125,10 +126,20 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    final String removeday = title.getText().toString();
+                    removeday = title.getText().toString();
+                    HashMap<String, Object> removemap = (HashMap<String, Object>) ScheduleActivity.workdays.clone();
 
-                    if(mdays.indexOf(removeday) != -1)
-                    {
+                    if (mdays.indexOf(removeday) != -1) {
+                        List<String> removearray = (ArrayList<String>) removemap.get(ScheduleScrollingActivity.f_user.getUid());
+                        if (removearray != null && removearray.contains(removeday)) {
+                            removearray.remove(removeday);
+                            FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).getRef().setValue(removearray);
+                            notifyDataSetChanged();
+                        }
+                    }
+                    return false;
+                }
+/*
                         FirebaseDatabase.getInstance().getReference().child("workdays").child(ScheduleScrollingActivity.f_user.getUid()).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -144,20 +155,18 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                             public void onCancelled(@NonNull DatabaseError databaseError) {
 
                             }
+                            return false;
+                            */
+
                         });
                         Toast.makeText(activity, "remove " + title.getText().toString() + " from your workdays", Toast.LENGTH_SHORT).show();
-                        notifyDataSetChanged();
                     }
                     //irebaseDatabase.getInstance().getReference().child("pending").setValue();
 
                     //Toast.makeText(activity, "remove " +
                     //        mdays.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
                     //removeItemView(getAdapterPosition());
-                    return false;
-                }
-            });
         }
-    }
 
     private void removeItemView(int position) {
         mdays.remove(position);
@@ -173,7 +182,6 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 return a.getDisplayName();
             }
         }
-
         return null;
     }
 }

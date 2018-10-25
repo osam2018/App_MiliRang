@@ -39,9 +39,7 @@ public class ScheduleActivity extends AppCompatActivity {
     ScheduleVO vo;
     DatabaseReference ref;
     FirebaseUser f_user;
-    HashMap<String, Object> workdays;
-
-
+    public static HashMap<String, Object> workdays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
