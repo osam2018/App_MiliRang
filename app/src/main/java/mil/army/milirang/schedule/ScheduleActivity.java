@@ -137,13 +137,6 @@ public class ScheduleActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-
-                        for(String tmp : workdays.keySet())
-                        {
-                            Log.d("tag", "tmp : "+tmp);
-                            ArrayList<String> array_here = (ArrayList<String>) workdays.get(tmp);
-                        }
-
                     }
 
                     @Override
@@ -155,11 +148,23 @@ public class ScheduleActivity extends AppCompatActivity {
                 for(int i = 0; i < daylist.size(); i++) {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     //if there is already value that matches with day
+                    for(String tmp : workdays.keySet())
+                    {
+                        ArrayList<String> array_herdays = (ArrayList<String>) workdays.get(tmp);
+                        if(array_herdays.contains(day))
+                        {
+                            if(f_user.getUid().equals(tmp)) {
+                                Toast.makeText(ScheduleActivity.this, day + "에 이미 등록하셨습니다.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Toast.makeText(ScheduleActivity.this, day+"에 이미 "+f_user.getDisplayName()+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     days.add(day);
                 }
                 Toast.makeText(ScheduleActivity.this, "내 당직으로 설정완료", Toast.LENGTH_SHORT).show();
                 FirebaseDatabase.getInstance().getReference("workdays").child(f_user.getUid()).setValue(days);
-
             }
         });
 
