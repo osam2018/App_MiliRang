@@ -151,13 +151,10 @@ public class ScheduleActivity extends AppCompatActivity {
                     for(String tmp : workdays.keySet())
                     {
                         ArrayList<String> array_herdays = (ArrayList<String>) workdays.get(tmp);
-                        if(array_herdays.contains(day))
+                        if(array_herdays.contains(day) && !f_user.getUid().equals(tmp))
                         {
-                            if(f_user.getUid().equals(tmp)) {
-                                Toast.makeText(ScheduleActivity.this, day + "에 이미 등록하셨습니다.", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
                             Toast.makeText(ScheduleActivity.this, day+"에 이미 "+f_user.getDisplayName()+"가 등록했습니다.", Toast.LENGTH_SHORT).show();
+                            days.clear();
                             return;
                         }
                     }
