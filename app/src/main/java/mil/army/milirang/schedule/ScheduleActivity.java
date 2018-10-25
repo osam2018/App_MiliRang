@@ -57,7 +57,6 @@ public class ScheduleActivity extends AppCompatActivity {
 
 ///////////////Calender Setting////////////////////////
         Calendar firstday = Calendar.getInstance();
-        //firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
         lastday.add(Calendar.MONTH, 1);
 

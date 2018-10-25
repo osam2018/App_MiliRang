@@ -33,12 +33,10 @@ import static mil.army.milirang.schedule.ValuesFromFirebase.*;
 public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRecyclerViewAdapter.ViewHolder> {
 
     private Activity activity;
-   // private List<String> mdays ;// 내 계정에 할당된 당직날짜들
     String removeday;
 
     public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity) {
         this.activity = activity;
-        //this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());
     }
 
     @NonNull
@@ -122,14 +120,5 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 }
             });
         }
-    }
-
-    public ArrayList<String> AlwaysNotNullArrayListFromWorkdays()
-    {
-        if(workdays.get(f_user.getUid()) != null)
-            return (ArrayList<String>) workdays.get(f_user.getUid());
-        else
-            return new ArrayList<String>();
-
     }
 }
