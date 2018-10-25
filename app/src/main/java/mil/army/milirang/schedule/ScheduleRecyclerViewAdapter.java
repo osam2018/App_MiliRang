@@ -38,7 +38,7 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
 
     public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays) {
         this.activity = activity;
-        this.mdays = mdays;
+        this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());//mdays;
     }
 
     @NonNull
@@ -56,8 +56,9 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     public void onBindViewHolder(@NonNull final ScheduleRecyclerViewAdapter.ViewHolder viewHolder, int i) {
         String data = schedules.get(i);
         viewHolder.title.setText(data);
+        ArrayList<String> tmp_mday = (ArrayList<String>) workdays.get(f_user.getUid());
 
-        if(mdays.contains(schedules.get(i))) {
+        if(tmp_mday != null && tmp_mday.contains(schedules.get(i))) {
             viewHolder.name.setText("내 당직");
         }
         else {
@@ -105,22 +106,32 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
                 @Override
                 public boolean onLongClick(View view) {
                     removeday = title.getText().toString();
-                    HashMap<String, Object> removemap = (HashMap<String, Object>) workdays.clone();
+                    //HashMap<String, Object> removemap = (HashMap<String, Object>) workdays;
 
                     if (mdays.indexOf(removeday) != -1) {
-                        List<String> removearray = (ArrayList<String>) removemap.get(f_user.getUid());
+                        List<String> removearray = (ArrayList<String>) workdays.get(f_user.getUid());
                         if (removearray != null && removearray.contains(removeday)) {
                             removearray.remove(removeday);
                             FirebaseDatabase.getInstance().getReference().child("workdays").child(f_user.getUid()).getRef().setValue(removearray);
                             Toast.makeText(activity, "remove " + removeday + " from your workdays", Toast.LENGTH_SHORT).show();
-                            ScheduleScrollingActivity.adapter.notifyDataSetChanged();
                         }
                     }
+                    ScheduleScrollingActivity.adapter.notifyDataSetChanged();
                     return false;
                 }
             });
         }
     }
+
+    public ArrayList<String> AlwaysNotNullArrayListFromWorkdays()
+    {
+        if(workdays.get(f_user.getUid()) != null)
+            return (ArrayList<String>) workdays.get(f_user.getUid());
+        else
+            return new ArrayList<String>();
+
+    }
+
 
     private void removeItemView(int position) {
         mdays.remove(position);

@@ -33,7 +33,6 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
     RecyclerView recyclerview;
     RecyclerView.LayoutManager layoutmanager;
     List<String> arr;
-    DatabaseReference ref;
 
     public static ScheduleRecyclerViewAdapter adapter;
 
@@ -42,52 +41,17 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_scrolling);
 
-        ref = FirebaseDatabase.getInstance().getReference().child("schedules");
         recyclerview = (RecyclerView) findViewById(R.id.schedule_list);
         arr = new ArrayList<String>();
         adapter = new ScheduleRecyclerViewAdapter(this, arr);
-
-        // Toast.makeText(ScheduleScrollingActivity.this, list.get(0), Toast.LENGTH_SHORT);
-
         recyclerview.setHasFixedSize(true);
 
         layoutmanager = new LinearLayoutManager(this);
         recyclerview.setLayoutManager(layoutmanager);
         recyclerview.setAdapter(adapter);
 
-//        loadScheduleList();
         loadSchedulePersonList();
-
     }
-
-    /**
-     * Loads Reports from "schedule" table from firebase database.
-     */
-
-    /*
-    private void loadScheduleList() {
-        Query schedules = ref.orderByKey().equalTo(f_user.getUid());
-
-        schedules.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list.clear();
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    List<String> temp = (List<String>) singleSnapshot.getValue();
-                    for (int i = 0; i < temp.size(); i++) {
-                        String day = (String) temp.get(i);
-                        list.add(day);
-                    }
-                    adapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("TAG", "ERROR!");
-            }
-        });
-    }*/
 
     private void loadSchedulePersonList() {
         Query workdays = FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().equalTo(f_user.getUid());
