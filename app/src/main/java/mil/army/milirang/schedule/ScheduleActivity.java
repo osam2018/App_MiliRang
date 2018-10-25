@@ -38,6 +38,7 @@ public class ScheduleActivity extends AppCompatActivity {
     Button b;
     Button b_list;
     Button my_set;
+    Button undo_button;
     CalendarPickerView calendar;
     ScheduleVO vo;
     FirebaseUser f_user;
@@ -49,6 +50,7 @@ public class ScheduleActivity extends AppCompatActivity {
         t = (TextView) findViewById(R.id.test);
         b = (Button) findViewById(R.id.summit_button);
         b_list = (Button) findViewById(R.id.to_mylist);
+        undo_button = (Button) findViewById(R.id.undo_button);
         my_set = (Button) findViewById(R.id.my_set_buttion);
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
@@ -170,6 +172,18 @@ public class ScheduleActivity extends AppCompatActivity {
                 }
                 Toast.makeText(ScheduleActivity.this, "내 당직으로 설정완료", Toast.LENGTH_SHORT).show();
                 FirebaseDatabase.getInstance().getReference("workdays").child(f_user.getUid()).setValue(days);
+            }
+        });
+
+        undo_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar firstday = Calendar.getInstance();
+                Calendar lastday = Calendar.getInstance();
+                lastday.add(Calendar.MONTH, 1);
+                Date today = new Date();
+
+                calendar.init(firstday.getTime(), lastday.getTime()).inMode(CalendarPickerView.SelectionMode.MULTIPLE).withHighlightedDate(today);
             }
         });
     }

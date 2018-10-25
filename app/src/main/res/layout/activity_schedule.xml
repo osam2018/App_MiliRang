@@ -81,4 +81,21 @@
         app:layout_constraintEnd_toStartOf="@+id/summit_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendar_view" />
+
+    <Button
+        android:id="@+id/undo_button"
+        android:layout_width="48dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="21dp"
+        android:text="Undo"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toTopOf="@+id/calendar_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/calendar_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>
