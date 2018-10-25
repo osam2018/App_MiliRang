@@ -40,13 +40,7 @@ public class ScheduleActivity extends AppCompatActivity {
     Button my_set;
     CalendarPickerView calendar;
     ScheduleVO vo;
-    DatabaseReference ref;
     FirebaseUser f_user;
-    /*
-    public static HashMap<String, Object> workdays;
-    public static List<UserVO> refuids;
-    public static HashMap<String, Object> uids;
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,68 +52,8 @@ public class ScheduleActivity extends AppCompatActivity {
         my_set = (Button) findViewById(R.id.my_set_buttion);
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         f_user = FirebaseAuth.getInstance().getCurrentUser();
-        ref = FirebaseDatabase.getInstance().getReference().child("schedules");
 
-        // 자료 접근 static 변수에 값을 갱신해줌
-        /*
-        FirebaseDatabase.getInstance().getReference().child("workdays").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                workdays.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        FirebaseDatabase.getInstance().getReference().child("users").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot single : dataSnapshot.getChildren()) {
-                            UserVO tmp = single.getValue(UserVO.class);
-                            refuids.add(tmp);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-        FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                uids.putAll((HashMap<String, Object>) dataSnapshot.getValue());
-
-                for(String tmp : uids.keySet())
-                {
-                    Log.d("tag", "tmp : "+tmp);
-                    ArrayList<String> array_here = (ArrayList<String>) uids.get(tmp);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        ArrayList<Date> info = new ArrayList<Date>();
-
-        String day1 = "2018-10-25";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-        try { //임시로 String을 Date로 바꾸는거 실험용
-            Date date1 = format.parse(day1);
-            info.add(date1);
-        }catch (ParseException o)
-        {
-            Log.d("Wrong Format", "Wrong Format!");
-        }
-*///////////////Calender Setting////////////////////////
+///////////////Calender Setting////////////////////////
         Calendar firstday = Calendar.getInstance();
         //firstday.set(Calendar.DAY_OF_MONTH, 1);
         Calendar lastday = Calendar.getInstance();
@@ -162,7 +96,22 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onDateSelected(Date date) {
                 String selected = new SimpleDateFormat("yyyy-MM-dd").format(date);
-                t.setText(selected); //나중에 서버에서 해당 날짜(포맷은 위와같음)로 저장된 키 : value를 찾아서 밑에 해당 휴가자나 당직자를 표시
+
+                for(String tmp : workdays.keySet())
+                {
+                    ArrayList<String> array_here = (ArrayList<String>) workdays.get(tmp);
+                    if(array_here.contains(selected))
+                    {
+                        String name_found = ScheduleActivity.findNameInList(tmp, refuids);
+                        if(name_found != null)
+                        {
+                            t.setText(name_found);
+                            return;
+                        }
+                    }
+                }
+                t.setText("Not Reserved!");
+                //workdays에서 날짜를 찾아서 날짜를 가지고 있는 uid의 displayname을 출력 만약 다 찾아봤는데도 없으면 그냥 not reserved!
             }
 
             @Override
@@ -185,7 +134,7 @@ public class ScheduleActivity extends AppCompatActivity {
                     String day = new SimpleDateFormat("yyyy-MM-dd").format(daylist.get(i));
                     days.add(day);
                     Toast.makeText(ScheduleActivity.this, day, Toast.LENGTH_SHORT).show();
-                    ref.child(f_user.getUid()).setValue(days); // 버튼을 누르면 선택한 날짜를 넘겨줌
+                    FirebaseDatabase.getInstance().getReference().child("schedules").child(f_user.getUid()).setValue(days); // 버튼을 누르면 선택한 날짜를 넘겨줌
                 }
             }
         });
@@ -223,11 +172,18 @@ public class ScheduleActivity extends AppCompatActivity {
                 FirebaseDatabase.getInstance().getReference("workdays").child(f_user.getUid()).setValue(days);
             }
         });
+    }
 
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        Calendar firstday = Calendar.getInstance();
+        Calendar lastday = Calendar.getInstance();
+        lastday.add(Calendar.MONTH, 1);
+        Date today = new Date();
 
-        t.setText(String.valueOf(calendar.getSelectedDates().size()));
-//        CalendarCellDecorator deco = new CalendarCellDecorator();
-  //      calendar.getDecorators().add(deco);
+        calendar.init(firstday.getTime(), lastday.getTime()).inMode(CalendarPickerView.SelectionMode.MULTIPLE).withHighlightedDate(today);
     }
     public static String findNameInList(String uid, List<UserVO> arr){
         for(UserVO a : arr)

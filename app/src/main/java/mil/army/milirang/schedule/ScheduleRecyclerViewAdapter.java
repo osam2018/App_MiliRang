@@ -36,9 +36,9 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
     private List<String> mdays ;// 내 계정에 할당된 당직날짜들
     String removeday;
 
-    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity, List<String> mdays) {
+    public ScheduleRecyclerViewAdapter(ScheduleScrollingActivity activity) {
         this.activity = activity;
-        this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());//mdays;
+        this.mdays = (ArrayList<String>) workdays.get(f_user.getUid());
     }
 
     @NonNull
@@ -130,12 +130,5 @@ public class ScheduleRecyclerViewAdapter extends RecyclerView.Adapter<ScheduleRe
         else
             return new ArrayList<String>();
 
-    }
-
-
-    private void removeItemView(int position) {
-        mdays.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, mdays.size()); // 지워진 만큼 다시 채워넣기.
     }
 }

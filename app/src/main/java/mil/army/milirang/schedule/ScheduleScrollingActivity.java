@@ -32,7 +32,6 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
 
     RecyclerView recyclerview;
     RecyclerView.LayoutManager layoutmanager;
-    List<String> arr;
 
     public static ScheduleRecyclerViewAdapter adapter;
 
@@ -42,38 +41,11 @@ public class ScheduleScrollingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_scrolling);
 
         recyclerview = (RecyclerView) findViewById(R.id.schedule_list);
-        arr = new ArrayList<String>();
-        adapter = new ScheduleRecyclerViewAdapter(this, arr);
-        recyclerview.setHasFixedSize(true);
-
+        adapter = new ScheduleRecyclerViewAdapter(this);
         layoutmanager = new LinearLayoutManager(this);
+
         recyclerview.setLayoutManager(layoutmanager);
         recyclerview.setAdapter(adapter);
-
-        loadSchedulePersonList();
-    }
-
-    private void loadSchedulePersonList() {
-        Query workdays = FirebaseDatabase.getInstance().getReference().child("workdays").orderByKey().equalTo(f_user.getUid());
-
-        workdays.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                arr.clear();
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    List<String> temp = (List<String>) singleSnapshot.getValue();
-                    for (int i = 0; i < temp.size(); i++) {
-                        String day = (String) temp.get(i);
-                        arr.add(day);
-                    }
-                    adapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("TAG", "ERROR!");
-            }
-        });
+        recyclerview.setHasFixedSize(true);
     }
 }
