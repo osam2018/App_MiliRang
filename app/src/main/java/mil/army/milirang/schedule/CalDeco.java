@@ -25,23 +25,18 @@ public class CalDeco implements CalendarCellDecorator {
     public void decorate(CalendarCellView cellView, Date date) {
 
         List<Date> selects = calview.getSelectedDates();
-
+/*
         if(date.before(new Date())){
             nodays.add(date);
             cellView.setSelectable(false);
         }
-
+*/
         if(!cellView.isSelectable())
-        {
-            cellView.getDayOfMonthTextView().setText("no!");
-        }
-
-        if(nodays.indexOf(date) != -1)
         {
             cellView.setBackgroundColor(Color.BLACK);
         }
         else {
-            if (selects.indexOf(date) != -1 && nodays.indexOf(date) == -1) {
+            if (selects.indexOf(date) != -1 && nodays.indexOf(date) == -1 ) {
                 int purpleColor = Color.parseColor("#7a00ff");
                 cellView.setBackgroundColor(purpleColor);
                 cellView.getDayOfMonthTextView().setTextColor(Color.GREEN);
