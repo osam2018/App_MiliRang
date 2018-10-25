@@ -123,8 +123,8 @@ public class EventCreateActivity extends AppCompatActivity {
                 EventVO event = new EventVO();
                 event.setEvent_title(((TextView) findViewById(R.id.event_create_title)).getText().toString());
                 event.setEvent_detail(((TextView) findViewById(R.id.event_create_body)).getText().toString());
-                event.setEvent_from(start_date);
-                event.setEvent_to(end_date);
+                event.setEvent_from(start_date.getTimeInMillis());
+                event.setEvent_to(end_date.getTimeInMillis());
                 DatabaseReference newobj = mDatabase.child("event")
                         .child(String.valueOf(start_date.get(Calendar.YEAR)))
                         .child(String.valueOf(start_date.get(Calendar.MONTH) + 1))
